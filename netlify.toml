@@ -3,6 +3,20 @@
   command = "npm run build"
   publish = "dist"
 
+# Serve service worker with correct MIME type
+[[headers]]
+  for = "/service-worker.js"
+  [headers.values]
+    Content-Type = "application/javascript"
+    Service-Worker-Allowed = "/"
+
+# Serve manifest with correct MIME type
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Content-Type = "application/manifest+json"
+
+# SPA redirects - must be last
 [[redirects]]
   from = "/*"
   to = "/index.html"
