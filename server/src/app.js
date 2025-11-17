@@ -17,7 +17,7 @@ const corsOptions = {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    const allowedOrigins = process.env.CLIENT_URL?.split(',') || [
+    const allowedOrigins = process.env.CLIENT_URL?.split(',').map(url => url.trim()) || [
       'http://localhost:5173',
       'http://localhost:5174',
       'http://localhost:3000',
@@ -28,9 +28,23 @@ const corsOptions = {
       return callback(null, true);
     }
     
+    // Allow Netlify preview URLs (pattern: https://*-*.netlify.app)
+    if (origin.includes('.netlify.app')) {
+      return callback(null, true);
+    }
+    
+    // Allow Vercel preview URLs (pattern: https://*-*.vercel.app)
+    if (origin.includes('.vercel.app')) {
+      return callback(null, true);
+    }
+    
+    // Check exact match with allowed origins
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      // Log for debugging
+      console.log('CORS blocked origin:', origin);
+      console.log('Allowed origins:', allowedOrigins);
       callback(new Error('Not allowed by CORS'));
     }
   },
