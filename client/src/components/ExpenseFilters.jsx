@@ -34,7 +34,7 @@ const ExpenseFilters = ({ filters, onChange }) => {
   return (
     <div className="glass-card grid gap-4 sm:gap-4 md:gap-4 lg:gap-3 p-5 sm:p-4 md:p-4 lg:p-3 md:grid-cols-2 lg:grid-cols-4">
       <div className="grid gap-1">
-        <label className="text-xl sm:text-lg md:text-base lg:text-sm font-medium text-slate-600" htmlFor="status">
+        <label className="text-sm sm:text-base md:text-base lg:text-sm font-medium text-slate-600" htmlFor="status">
           Status
         </label>
         <select id="status" name="status" className="input-field" value={localFilters.status} onChange={handleInputChange}>
@@ -46,7 +46,7 @@ const ExpenseFilters = ({ filters, onChange }) => {
         </select>
       </div>
       <div className="grid gap-1">
-        <label className="text-xl sm:text-lg md:text-base lg:text-sm font-medium text-slate-600" htmlFor="category">
+        <label className="text-sm sm:text-base md:text-base lg:text-sm font-medium text-slate-600" htmlFor="category">
           Category
         </label>
         <input
@@ -59,7 +59,7 @@ const ExpenseFilters = ({ filters, onChange }) => {
         />
       </div>
       <div className="grid gap-1">
-        <label className="text-xl sm:text-lg md:text-base lg:text-sm font-medium text-slate-600" htmlFor="startDate">
+        <label className="text-sm sm:text-base md:text-base lg:text-sm font-medium text-slate-600" htmlFor="startDate">
           Start Date
         </label>
         <input
@@ -72,7 +72,7 @@ const ExpenseFilters = ({ filters, onChange }) => {
         />
       </div>
       <div className="grid gap-1">
-        <label className="text-xl sm:text-lg md:text-base lg:text-sm font-medium text-slate-600" htmlFor="endDate">
+        <label className="text-sm sm:text-base md:text-base lg:text-sm font-medium text-slate-600" htmlFor="endDate">
           End Date
         </label>
         <input

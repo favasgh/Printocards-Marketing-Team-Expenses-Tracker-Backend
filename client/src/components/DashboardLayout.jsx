@@ -123,8 +123,8 @@ const DashboardLayout = ({ title, subtitle = '', actions = null, children }) => 
                 <Bars3Icon className="h-5 w-5" />
               </button>
               <div>
-                <h1 className="text-2xl font-semibold text-slate-900 md:text-xl">{title}</h1>
-                {subtitle && <p className="text-lg md:text-sm text-slate-500">{subtitle}</p>}
+                <h1 className="text-lg sm:text-xl font-semibold text-slate-900 md:text-xl">{title}</h1>
+                {subtitle && <p className="text-xs sm:text-sm md:text-sm text-slate-500">{subtitle}</p>}
               </div>
             </div>
             <div className="flex items-center gap-4">
@@ -136,8 +136,8 @@ const DashboardLayout = ({ title, subtitle = '', actions = null, children }) => 
             </div>
           </div>
         </header>
-        <main className="px-4 py-5 sm:py-5 md:px-8 md:py-8 text-lg md:text-sm min-h-[calc(100vh-140px)] sm:min-h-[calc(100vh-150px)] md:min-h-0">
-          <div className="space-y-5 sm:space-y-4 md:space-y-6">{children}</div>
+        <main className="px-3 py-4 sm:px-4 sm:py-5 md:px-8 md:py-8 text-sm sm:text-base md:text-sm min-h-[calc(100vh-140px)] sm:min-h-[calc(100vh-150px)] md:min-h-0">
+          <div className="space-y-4 sm:space-y-4 md:space-y-6">{children}</div>
         </main>
         <Footer />
       </div>

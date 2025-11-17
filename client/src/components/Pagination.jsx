@@ -13,14 +13,14 @@ const Pagination = ({ page, pages, onPageChange }) => {
   const visiblePages = range(Math.max(1, page - 2), Math.min(pages, page + 2));
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-4 sm:gap-3 rounded-lg border-2 sm:border border-slate-200 bg-white px-6 py-5 sm:px-5 sm:py-4 md:px-4 md:py-3 lg:px-3 lg:py-2 text-xl sm:text-lg md:text-base lg:text-sm">
-      <p className="text-slate-500">
+    <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 sm:px-5 sm:py-4 md:px-4 md:py-3 lg:px-3 lg:py-2">
+      <p className="text-sm sm:text-base md:text-base lg:text-sm text-slate-500">
         Page {page} of {pages}
       </p>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2">
         <button
           type="button"
-          className="btn-secondary px-8 py-4 sm:px-6 sm:py-3 md:px-4 md:py-2 lg:px-3 lg:py-1 text-xl sm:text-lg md:text-base lg:text-sm"
+          className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 md:px-4 md:py-2 lg:px-3 lg:py-1 text-xs sm:text-sm md:text-base lg:text-sm whitespace-nowrap"
           disabled={page === 1}
           onClick={() => onPageChange(page - 1)}
         >
@@ -30,7 +30,7 @@ const Pagination = ({ page, pages, onPageChange }) => {
           <button
             key={value}
             type="button"
-            className={`rounded-lg px-6 py-4 sm:px-5 sm:py-3 md:px-4 md:py-2 lg:px-3 lg:py-1 text-xl sm:text-lg md:text-base lg:text-sm font-medium ${
+            className={`rounded-lg px-3 py-1.5 sm:px-4 sm:py-2 md:px-4 md:py-2 lg:px-3 lg:py-1 text-xs sm:text-sm md:text-base lg:text-sm font-medium ${
               value === page ? 'bg-primary text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
             }`}
             onClick={() => onPageChange(value)}
@@ -40,7 +40,7 @@ const Pagination = ({ page, pages, onPageChange }) => {
         ))}
         <button
           type="button"
-          className="btn-secondary px-8 py-4 sm:px-6 sm:py-3 md:px-4 md:py-2 lg:px-3 lg:py-1 text-xl sm:text-lg md:text-base lg:text-sm"
+          className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 md:px-4 md:py-2 lg:px-3 lg:py-1 text-xs sm:text-sm md:text-base lg:text-sm whitespace-nowrap"
           disabled={page === pages}
           onClick={() => onPageChange(page + 1)}
         >

@@ -124,11 +124,11 @@ const AdminDashboard = () => {
       title="Admin Dashboard"
       
       actions={
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-slate-600 hidden sm:block">Period:</label>
+            <label className="text-xs sm:text-sm font-medium text-slate-600 hidden sm:block">Period:</label>
             <select
-              className="input-field w-auto min-w-[120px]"
+              className="input-field w-auto min-w-[100px] sm:min-w-[120px] text-xs sm:text-sm"
               value={interval}
               onChange={(event) => {
                 setInterval(event.target.value);
@@ -139,10 +139,10 @@ const AdminDashboard = () => {
               <option value="weekly">Weekly</option>
             </select>
           </div>
-          <button type="button" className="btn-secondary" onClick={() => handleExport('excel')}>
+          <button type="button" className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap" onClick={() => handleExport('excel')}>
             Export Excel
           </button>
-          <button type="button" className="btn-secondary" onClick={() => handleExport('pdf')}>
+          <button type="button" className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap" onClick={() => handleExport('pdf')}>
             Export PDF
           </button>
         </div>

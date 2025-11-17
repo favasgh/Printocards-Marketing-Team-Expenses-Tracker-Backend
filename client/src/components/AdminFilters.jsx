@@ -32,9 +32,9 @@ const AdminFilters = ({ filters, salesmen, onChange }) => {
   };
 
   return (
-    <div className="glass-card grid gap-4 sm:gap-4 md:gap-4 lg:gap-3 p-5 sm:p-4 md:p-4 lg:p-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+    <div className="glass-card grid gap-3 sm:gap-4 md:gap-4 lg:gap-3 p-4 sm:p-4 md:p-4 lg:p-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
       <div className="grid gap-1 lg:col-span-1">
-        <label className="text-xl sm:text-lg md:text-base lg:text-xs font-medium text-slate-600" htmlFor="status">
+        <label className="text-sm sm:text-base md:text-base lg:text-xs font-medium text-slate-600" htmlFor="status">
           Status
         </label>
         <select id="status" name="status" className="input-field" value={localFilters.status} onChange={handleChange}>
@@ -46,7 +46,7 @@ const AdminFilters = ({ filters, salesmen, onChange }) => {
         </select>
       </div>
       <div className="grid gap-1 lg:col-span-1">
-        <label className="text-xl sm:text-lg md:text-base lg:text-xs font-medium text-slate-600" htmlFor="salesman">
+        <label className="text-sm sm:text-base md:text-base lg:text-xs font-medium text-slate-600" htmlFor="salesman">
           Salesman
         </label>
         <select id="salesman" name="salesman" className="input-field" value={localFilters.salesman} onChange={handleChange}>
@@ -59,7 +59,7 @@ const AdminFilters = ({ filters, salesmen, onChange }) => {
         </select>
       </div>
       <div className="grid gap-1 lg:col-span-1">
-        <label className="text-xl sm:text-lg md:text-base lg:text-xs font-medium text-slate-600" htmlFor="category">
+        <label className="text-sm sm:text-base md:text-base lg:text-xs font-medium text-slate-600" htmlFor="category">
           Category
         </label>
         <input
@@ -72,7 +72,7 @@ const AdminFilters = ({ filters, salesmen, onChange }) => {
         />
       </div>
       <div className="grid gap-1 lg:col-span-1">
-        <label className="text-xl sm:text-lg md:text-base lg:text-xs font-medium text-slate-600" htmlFor="startDate">
+        <label className="text-sm sm:text-base md:text-base lg:text-xs font-medium text-slate-600" htmlFor="startDate">
           Start Date
         </label>
         <input
@@ -85,7 +85,7 @@ const AdminFilters = ({ filters, salesmen, onChange }) => {
         />
       </div>
       <div className="grid gap-1 lg:col-span-1">
-        <label className="text-xl sm:text-lg md:text-base lg:text-xs font-medium text-slate-600" htmlFor="endDate">
+        <label className="text-sm sm:text-base md:text-base lg:text-xs font-medium text-slate-600" htmlFor="endDate">
           End Date
         </label>
         <input
@@ -98,7 +98,7 @@ const AdminFilters = ({ filters, salesmen, onChange }) => {
         />
       </div>
       <div className="grid gap-1 lg:col-span-1">
-        <label className="text-xl sm:text-lg md:text-base lg:text-xs font-medium text-slate-600" htmlFor="search">
+        <label className="text-sm sm:text-base md:text-base lg:text-xs font-medium text-slate-600" htmlFor="search">
           Search
         </label>
         <input

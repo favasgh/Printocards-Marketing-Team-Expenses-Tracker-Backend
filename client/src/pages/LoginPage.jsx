@@ -60,16 +60,16 @@ const LoginPage = () => {
             <img 
               src="/Logo.jpeg" 
               alt="Printo Logo" 
-              className="h-40 md:h-24 w-auto object-contain mb-4"
+              className="h-24 sm:h-32 md:h-24 w-auto object-contain mb-4"
               onError={() => setLogoError(true)}
             />
           )}
         </div>
-        <h1 className="mt-2 text-4xl md:text-2xl font-bold text-center text-slate-800">Sales Team Expense Tracker</h1>
+        <h1 className="mt-2 text-2xl sm:text-3xl md:text-2xl font-bold text-center text-slate-800">Sales Team Expense Tracker</h1>
 
         <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
           <div className="grid gap-1">
-            <label className="text-lg md:text-sm font-medium text-slate-600" htmlFor="email">
+            <label className="text-sm sm:text-base md:text-sm font-medium text-slate-600" htmlFor="email">
               Email
             </label>
             <input
@@ -83,7 +83,7 @@ const LoginPage = () => {
             />
           </div>
           <div className="grid gap-1">
-            <label className="text-lg md:text-sm font-medium text-slate-600" htmlFor="password">
+            <label className="text-sm sm:text-base md:text-sm font-medium text-slate-600" htmlFor="password">
               Password
             </label>
             <input

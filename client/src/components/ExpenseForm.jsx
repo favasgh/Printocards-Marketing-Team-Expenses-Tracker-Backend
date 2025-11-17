@@ -102,9 +102,9 @@ const ExpenseForm = ({ onSuccess = null }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="glass-card grid gap-5 sm:gap-4 md:gap-4 lg:gap-3 p-5 sm:p-4 md:p-5 lg:p-4">
+    <form onSubmit={handleSubmit} className="glass-card grid gap-4 sm:gap-4 md:gap-4 lg:gap-3 p-4 sm:p-4 md:p-5 lg:p-4">
       <div className="grid gap-1">
-        <label className="text-xl sm:text-lg md:text-base lg:text-sm font-medium text-slate-600" htmlFor="category">
+        <label className="text-sm sm:text-base md:text-base lg:text-sm font-medium text-slate-600" htmlFor="category">
           Category
         </label>
         <select
@@ -125,7 +125,7 @@ const ExpenseForm = ({ onSuccess = null }) => {
       </div>
       <div className="grid gap-1 md:grid-cols-2 md:gap-4">
         <div className="grid gap-1">
-          <label className="text-xl sm:text-lg md:text-base lg:text-sm font-medium text-slate-600" htmlFor="amount">
+          <label className="text-sm sm:text-base md:text-base lg:text-sm font-medium text-slate-600" htmlFor="amount">
             Amount
           </label>
           <input
@@ -141,14 +141,14 @@ const ExpenseForm = ({ onSuccess = null }) => {
           />
         </div>
         <div className="grid gap-1">
-          <label className="text-xl sm:text-lg md:text-base lg:text-sm font-medium text-slate-600" htmlFor="date">
+          <label className="text-sm sm:text-base md:text-base lg:text-sm font-medium text-slate-600" htmlFor="date">
             Date
           </label>
           <input id="date" name="date" type="date" className="input-field" value={form.date} onChange={handleChange} required />
         </div>
       </div>
       <div className="grid gap-1">
-        <label className="text-xl sm:text-lg md:text-base lg:text-sm font-medium text-slate-600" htmlFor="location">
+        <label className="text-sm sm:text-base md:text-base lg:text-sm font-medium text-slate-600" htmlFor="location">
           Location (optional)
         </label>
         <input
@@ -159,12 +159,12 @@ const ExpenseForm = ({ onSuccess = null }) => {
           value={form.location}
           onChange={handleChange}
         />
-        <button type="button" className="btn-secondary w-max px-8 py-5 sm:px-6 sm:py-4 md:px-4 md:py-2 lg:px-3 lg:py-1 text-xl sm:text-lg md:text-base lg:text-xs" onClick={captureLocation} disabled={locating}>
+        <button type="button" className="btn-secondary w-max px-4 py-2 sm:px-5 sm:py-2.5 md:px-4 md:py-2 text-sm sm:text-base md:text-sm whitespace-nowrap" onClick={captureLocation} disabled={locating}>
           {locating ? 'Capturing...' : 'Use current location'}
         </button>
       </div>
       <div className="grid gap-1">
-        <label className="text-xl sm:text-lg md:text-base lg:text-sm font-medium text-slate-600" htmlFor="note">
+        <label className="text-sm sm:text-base md:text-base lg:text-sm font-medium text-slate-600" htmlFor="note">
           Note
         </label>
         <textarea
@@ -178,10 +178,10 @@ const ExpenseForm = ({ onSuccess = null }) => {
         />
       </div>
       <div className="grid gap-2">
-        <label className="text-xl sm:text-lg md:text-base lg:text-sm font-medium text-slate-600" htmlFor="receipt">
+        <label className="text-sm sm:text-base md:text-base lg:text-sm font-medium text-slate-600" htmlFor="receipt">
           Receipt (JPG/PNG/PDF)
         </label>
-        <input id="receipt" type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={handleFileChange} className="text-base md:text-sm" />
+        <input id="receipt" type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={handleFileChange} className="text-sm sm:text-base md:text-sm" />
         {preview && (
           <img src={preview} alt="Preview" className="h-36 w-36 rounded-lg border border-slate-200 object-cover shadow-sm" />
         )}

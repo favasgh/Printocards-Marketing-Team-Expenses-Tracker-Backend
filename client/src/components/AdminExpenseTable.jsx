@@ -21,62 +21,62 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
   };
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
       <table className="min-w-full divide-y divide-slate-200">
-        <thead className="bg-slate-50 text-left text-lg sm:text-base md:text-sm lg:text-xs font-medium uppercase text-slate-500">
+        <thead className="bg-slate-50 text-left text-xs sm:text-sm md:text-sm lg:text-xs font-medium uppercase text-slate-500">
           <tr>
-            <th className="px-4 py-3">Salesman</th>
-            <th className="px-4 py-3">Category</th>
-            <th className="px-4 py-3">Amount</th>
-            <th className="px-4 py-3">Date</th>
-            <th className="px-4 py-3">Status</th>
-            <th className="px-4 py-3">Receipt</th>
-            <th className="px-4 py-3">Actions</th>
+            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Salesman</th>
+            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Category</th>
+            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Amount</th>
+            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Date</th>
+            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Status</th>
+            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4 hidden sm:table-cell">Receipt</th>
+            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100 text-lg sm:text-base md:text-sm lg:text-sm">
+        <tbody className="divide-y divide-slate-100 text-xs sm:text-sm md:text-sm">
           {expenses.map((expense) => (
             <tr key={expense._id} className="hover:bg-slate-50/60">
-              <td className="px-4 py-3">
-                <div className="font-medium text-slate-800">{expense.userId?.name}</div>
-                <div className="text-base md:text-xs text-slate-500">{expense.userId?.email}</div>
+              <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">
+                <div className="font-medium text-slate-800 text-xs sm:text-sm">{expense.userId?.name}</div>
+                <div className="text-xs text-slate-500 hidden sm:block">{expense.userId?.email}</div>
               </td>
-              <td className="px-4 py-3">
-                <div className="font-medium text-slate-800">{expense.category}</div>
-                {expense.note && <div className="text-base md:text-xs text-slate-500">{expense.note}</div>}
+              <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">
+                <div className="font-medium text-slate-800 text-xs sm:text-sm">{expense.category}</div>
+                {expense.note && <div className="text-xs text-slate-500 mt-0.5 line-clamp-1">{expense.note}</div>}
               </td>
-              <td className="px-4 py-3 font-semibold text-slate-700">₹{expense.amount.toFixed(2)}</td>
-              <td className="px-4 py-3">
-                <div>{format(new Date(expense.date), 'dd MMM yyyy')}</div>
-                <div className="text-base md:text-xs text-slate-500">{expense.location || '—'}</div>
+              <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4 font-semibold text-slate-700 text-xs sm:text-sm">₹{expense.amount.toFixed(2)}</td>
+              <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">
+                <div className="text-xs sm:text-sm">{format(new Date(expense.date), 'dd MMM yyyy')}</div>
+                <div className="text-xs text-slate-500 hidden sm:block">{expense.location || '—'}</div>
               </td>
-              <td className="px-4 py-3">
+              <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">
                 <StatusBadge status={expense.status} />
-                {expense.adminComment && <div className="mt-1 text-base md:text-xs text-slate-500">Note: {expense.adminComment}</div>}
+                {expense.adminComment && <div className="mt-1 text-xs text-slate-500 line-clamp-1">Note: {expense.adminComment}</div>}
               </td>
-              <td className="px-4 py-3">
+              <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4 hidden sm:table-cell">
                 {expense.imageUrl ? (
-                  <a href={expense.imageUrl} target="_blank" rel="noreferrer" className="text-lg md:text-sm text-primary hover:underline">
-                    View receipt
+                  <a href={expense.imageUrl} target="_blank" rel="noreferrer" className="text-xs sm:text-sm text-primary hover:underline">
+                    View
                   </a>
                 ) : (
-                  <span className="text-base md:text-xs text-slate-400">No file</span>
+                  <span className="text-xs text-slate-400">No file</span>
                 )}
               </td>
-              <td className="px-4 py-3">
-                <div className="flex flex-wrap gap-2">
+              <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">
+                <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
                   {expense.status === 'Pending' && (
                     <>
                       <button
                         type="button"
-                        className="btn-primary px-6 py-4 sm:px-5 sm:py-3 md:px-4 md:py-2 lg:px-3 lg:py-1 text-xl sm:text-lg md:text-base lg:text-xs"
+                        className="btn-primary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap"
                         onClick={() => handleStatusChange(expense, 'Approved')}
                       >
                         Approve
                       </button>
                       <button
                         type="button"
-                        className="btn-secondary px-6 py-4 sm:px-5 sm:py-3 md:px-4 md:py-2 lg:px-3 lg:py-1 text-xl sm:text-lg md:text-base lg:text-xs text-danger"
+                        className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm text-danger whitespace-nowrap"
                         onClick={() => handleStatusChange(expense, 'Rejected')}
                       >
                         Reject
@@ -86,7 +86,7 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
                   {expense.status === 'Approved' && (
                     <button
                       type="button"
-                      className="btn-primary px-5 py-3 md:px-3 md:py-1 text-base md:text-xs bg-indigo-600 hover:bg-indigo-700"
+                      className="btn-primary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-indigo-600 hover:bg-indigo-700 whitespace-nowrap"
                       onClick={() => handleStatusChange(expense, 'Paid')}
                     >
                       Paid
@@ -95,7 +95,7 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
                   {expense.status === 'Rejected' && (
                     <button
                       type="button"
-                      className="btn-primary px-6 py-4 sm:px-5 sm:py-3 md:px-4 md:py-2 lg:px-3 lg:py-1 text-xl sm:text-lg md:text-base lg:text-xs"
+                      className="btn-primary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap"
                       onClick={() => handleStatusChange(expense, 'Approved')}
                     >
                       Approve

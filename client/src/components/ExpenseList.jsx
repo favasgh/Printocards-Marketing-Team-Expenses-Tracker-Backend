@@ -72,40 +72,40 @@ const ExpenseList = ({ expenses, onEdit, onDelete }) => {
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
       <table className="min-w-full divide-y divide-slate-200">
         <thead className="bg-slate-50">
-          <tr className="text-left text-lg sm:text-base md:text-sm lg:text-xs font-medium uppercase text-slate-500">
-            <th className="px-4 py-3">Category</th>
-            <th className="px-4 py-3">Amount</th>
-            <th className="px-4 py-3">Date</th>
-            <th className="px-4 py-3">Location</th>
-            <th className="px-4 py-3">Status</th>
-            <th className="px-4 py-3">Receipt</th>
-            <th className="px-4 py-3">Actions</th>
+          <tr className="text-left text-xs sm:text-sm md:text-sm lg:text-xs font-medium uppercase text-slate-500">
+            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Category</th>
+            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Amount</th>
+            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4 hidden sm:table-cell">Date</th>
+            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4 hidden md:table-cell">Location</th>
+            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Status</th>
+            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4 hidden sm:table-cell">Receipt</th>
+            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-slate-100 text-lg sm:text-base md:text-sm lg:text-sm">
+        <tbody className="divide-y divide-slate-100 text-xs sm:text-sm md:text-sm">
           {expenses.map((expense) => {
             const isEditing = editingId === expense._id;
             return (
               <tr key={expense._id} className="hover:bg-slate-50/60">
-                <td className="px-4 py-3">
+                <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">
                   {isEditing ? (
                     <input
                       name="category"
                       value={editForm.category}
                       onChange={handleInputChange}
-                      className="input-field"
+                      className="input-field text-xs sm:text-sm"
                     />
                   ) : (
                     <div>
-                      <p className="font-medium text-slate-800">{expense.category}</p>
-                      {expense.note && <p className="text-base md:text-xs text-slate-500">{expense.note}</p>}
+                      <p className="font-medium text-slate-800 text-xs sm:text-sm">{expense.category}</p>
+                      {expense.note && <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">{expense.note}</p>}
                     </div>
                   )}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">
                   {isEditing ? (
                     <input
                       name="amount"
@@ -114,34 +114,34 @@ const ExpenseList = ({ expenses, onEdit, onDelete }) => {
                       min="0"
                       value={editForm.amount}
                       onChange={handleInputChange}
-                      className="input-field"
+                      className="input-field text-xs sm:text-sm"
                     />
                   ) : (
-                    <span className="font-semibold text-slate-700">₹{expense.amount.toFixed(2)}</span>
+                    <span className="font-semibold text-slate-700 text-xs sm:text-sm">₹{expense.amount.toFixed(2)}</span>
                   )}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4 hidden sm:table-cell">
                   {isEditing ? (
-                    <input name="date" type="date" value={editForm.date} onChange={handleInputChange} className="input-field" />
+                    <input name="date" type="date" value={editForm.date} onChange={handleInputChange} className="input-field text-xs sm:text-sm" />
                   ) : expense.date ? (
-                    <span>{format(new Date(expense.date), 'dd MMM yyyy')}</span>
+                    <span className="text-xs sm:text-sm">{format(new Date(expense.date), 'dd MMM yyyy')}</span>
                   ) : (
-                    <span className="text-base md:text-xs text-slate-400">Not set</span>
+                    <span className="text-xs text-slate-400">Not set</span>
                   )}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4 hidden md:table-cell">
                   {isEditing ? (
-                    <input name="location" value={editForm.location} onChange={handleInputChange} className="input-field" />
+                    <input name="location" value={editForm.location} onChange={handleInputChange} className="input-field text-xs sm:text-sm" />
                   ) : (
-                    <span>{expense.location || '—'}</span>
+                    <span className="text-xs sm:text-sm">{expense.location || '—'}</span>
                   )}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">
                   <div className="flex flex-col gap-1">
                     <StatusBadge status={expense.status} />
-                    {expense.isOffline && <span className="text-base md:text-xs text-warning">Queued for sync</span>}
+                    {expense.isOffline && <span className="text-xs text-warning">Queued</span>}
                     {expense.approvedBy && expense.status !== 'Pending' && (
-                      <span className="text-base md:text-xs text-slate-500">
+                      <span className="text-xs text-slate-500 hidden sm:block">
                         {expense.status === 'Approved' && 'Approved by '}
                         {expense.status === 'Rejected' && 'Rejected by '}
                         {expense.status === 'Paid' && 'Paid by '}
@@ -149,14 +149,14 @@ const ExpenseList = ({ expenses, onEdit, onDelete }) => {
                       </span>
                     )}
                     {expense.adminComment && (
-                      <span className="text-base md:text-xs text-slate-500 italic">"{expense.adminComment}"</span>
+                      <span className="text-xs text-slate-500 italic line-clamp-1">"{expense.adminComment}"</span>
                     )}
                   </div>
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4 hidden sm:table-cell">
                   {isEditing ? (
                     <div className="flex items-center gap-2">
-                      <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={handleFileChange} className="text-base md:text-xs" />
+                      <input type="file" accept=".jpg,.jpeg,.png,.pdf" onChange={handleFileChange} className="text-xs sm:text-sm" />
                       {preview && <img src={preview} alt="Preview" className="h-10 w-10 rounded border object-cover" />}
                     </div>
                   ) : expense.imageUrl ? (
@@ -164,21 +164,21 @@ const ExpenseList = ({ expenses, onEdit, onDelete }) => {
                       href={expense.imageUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-primary hover:underline"
+                      className="text-xs sm:text-sm text-primary hover:underline"
                     >
                       View
                     </a>
                   ) : (
-                    <span className="text-base md:text-xs text-slate-400">No file</span>
+                    <span className="text-xs text-slate-400">No file</span>
                   )}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">
                   {expense.isOffline ? (
-                    <div className="flex flex-col gap-1 text-base md:text-xs text-slate-500">
-                      <span>Pending sync</span>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs text-slate-500">Pending sync</span>
                       <button
                         type="button"
-                        className="btn-secondary px-5 py-3 md:px-3 md:py-1 text-base md:text-xs text-danger"
+                        className="btn-secondary px-2 py-1 sm:px-3 sm:py-1.5 text-xs sm:text-sm text-danger whitespace-nowrap"
                         onClick={() => onDelete(expense)}
                       >
                         Remove
@@ -186,44 +186,34 @@ const ExpenseList = ({ expenses, onEdit, onDelete }) => {
                     </div>
                   ) : expense.status === 'Pending' ? (
                     isEditing ? (
-                      <div className="flex items-center gap-2">
-                        <button type="button" className="btn-primary px-6 py-4 sm:px-5 sm:py-3 md:px-4 md:py-2 lg:px-3 lg:py-1 text-xl sm:text-lg md:text-base lg:text-xs" onClick={saveChanges}>
+                      <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+                        <button type="button" className="btn-primary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap" onClick={saveChanges}>
                           Save
                         </button>
-                        <button type="button" className="btn-secondary px-6 py-4 sm:px-5 sm:py-3 md:px-4 md:py-2 lg:px-3 lg:py-1 text-xl sm:text-lg md:text-base lg:text-xs" onClick={cancelEditing}>
+                        <button type="button" className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap" onClick={cancelEditing}>
                           Cancel
                         </button>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
                         <button
                           type="button"
-                          className="btn-secondary px-6 py-4 sm:px-5 sm:py-3 md:px-4 md:py-2 lg:px-3 lg:py-1 text-xl sm:text-lg md:text-base lg:text-xs"
+                          className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap"
                           onClick={() => startEditing(expense)}
                         >
                           Edit
                         </button>
-                        {!expense.isOffline ? (
-                          <button
-                            type="button"
-                            className="btn-secondary px-5 py-3 md:px-3 md:py-1 text-base md:text-xs text-danger"
-                            onClick={() => onDelete(expense)}
-                          >
-                            Delete
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            className="btn-secondary px-5 py-3 md:px-3 md:py-1 text-base md:text-xs text-danger"
-                            onClick={() => onDelete(expense)}
-                          >
-                            Remove
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm text-danger whitespace-nowrap"
+                          onClick={() => onDelete(expense)}
+                        >
+                          Delete
+                        </button>
                       </div>
                     )
                   ) : (
-                    <span className="text-base md:text-xs text-slate-400">No actions</span>
+                    <span className="text-xs text-slate-400">Locked</span>
                   )}
                 </td>
               </tr>
