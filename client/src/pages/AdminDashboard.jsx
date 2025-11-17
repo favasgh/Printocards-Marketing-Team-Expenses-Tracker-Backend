@@ -73,8 +73,25 @@ const AdminDashboard = () => {
     setPage(1);
   };
 
-  const handleStatusUpdate = (payload) => {
-    dispatch(updateAdminExpenseStatus(payload));
+  const handleStatusUpdate = async (payload) => {
+    const result = await dispatch(updateAdminExpenseStatus(payload));
+    if (updateAdminExpenseStatus.fulfilled.match(result)) {
+      // Refetch expenses and reports to ensure data is in sync
+      dispatch(
+        fetchAdminExpenses({
+          page,
+          limit: pagination.limit,
+          ...filters,
+          interval,
+        })
+      );
+      dispatch(
+        fetchReports({
+          ...filters,
+          interval,
+        })
+      );
+    }
   };
 
   const handleExport = async (format) => {

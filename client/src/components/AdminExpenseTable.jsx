@@ -12,12 +12,21 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
   }
 
   const handleStatusChange = (expense, status) => {
-    const comment = window.prompt(`Add a comment for ${status} (optional):`, expense.adminComment || '');
-    onUpdateStatus({
-      id: expense._id,
-      status,
-      adminComment: comment || '',
-    });
+    const statusMessages = {
+      'Pending': 'revert to Pending',
+      'Approved': 'approve',
+      'Rejected': 'reject',
+      'Paid': 'mark as Paid',
+    };
+    const actionMessage = statusMessages[status] || status.toLowerCase();
+    const comment = window.prompt(`Add a comment for ${actionMessage} (optional):`, expense.adminComment || '');
+    if (comment !== null) {
+      onUpdateStatus({
+        id: expense._id,
+        status,
+        adminComment: comment || '',
+      });
+    }
   };
 
   return (
@@ -84,21 +93,48 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
                     </>
                   )}
                   {expense.status === 'Approved' && (
-                    <button
-                      type="button"
-                      className="btn-primary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-indigo-600 hover:bg-indigo-700 whitespace-nowrap"
-                      onClick={() => handleStatusChange(expense, 'Paid')}
-                    >
-                      Paid
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        className="btn-primary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-indigo-600 hover:bg-indigo-700 whitespace-nowrap"
+                        onClick={() => handleStatusChange(expense, 'Paid')}
+                      >
+                        Mark Paid
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap"
+                        onClick={() => handleStatusChange(expense, 'Pending')}
+                      >
+                        Undo Approval
+                      </button>
+                    </>
                   )}
                   {expense.status === 'Rejected' && (
+                    <>
+                      <button
+                        type="button"
+                        className="btn-primary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap"
+                        onClick={() => handleStatusChange(expense, 'Approved')}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap"
+                        onClick={() => handleStatusChange(expense, 'Pending')}
+                      >
+                        Undo Rejection
+                      </button>
+                    </>
+                  )}
+                  {expense.status === 'Paid' && (
                     <button
                       type="button"
-                      className="btn-primary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap"
+                      className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap"
                       onClick={() => handleStatusChange(expense, 'Approved')}
                     >
-                      Approve
+                      Undo Paid
                     </button>
                   )}
                 </div>
