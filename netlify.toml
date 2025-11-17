@@ -3,18 +3,33 @@
   command = "npm run build"
   publish = "dist"
 
+# Exclude service worker and manifest from SPA redirects
+[[redirects]]
+  from = "/service-worker.js"
+  to = "/service-worker.js"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/manifest.json"
+  to = "/manifest.json"
+  status = 200
+  force = true
+
 # Serve service worker with correct MIME type
 [[headers]]
   for = "/service-worker.js"
   [headers.values]
     Content-Type = "application/javascript"
     Service-Worker-Allowed = "/"
+    Cache-Control = "no-cache"
 
 # Serve manifest with correct MIME type
 [[headers]]
   for = "/manifest.json"
   [headers.values]
     Content-Type = "application/manifest+json"
+    Cache-Control = "no-cache"
 
 # SPA redirects - must be last
 [[redirects]]

@@ -35,6 +35,3 @@ lerna-debug.log*
 # OS
 .DS_Store
 Thumbs.db
-
-# Service worker
-client/public/service-worker.js
