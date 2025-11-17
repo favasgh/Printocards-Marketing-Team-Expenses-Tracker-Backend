@@ -28,7 +28,7 @@ const DashboardLayout = ({ title, subtitle = '', actions = null, children }) => 
               <img 
                 src="/Logo.jpeg" 
                 alt="Printo Logo" 
-                className="h-20 w-auto object-contain"
+                className="h-12 w-auto object-contain"
                 onError={() => setLogoError(true)}
               />
             </div>
@@ -74,7 +74,7 @@ const DashboardLayout = ({ title, subtitle = '', actions = null, children }) => 
                 <img 
                   src="/Logo.jpeg" 
                   alt="Printo Logo" 
-                  className="h-28 md:h-20 w-auto object-contain"
+                  className="h-16 md:h-12 w-auto object-contain"
                   onError={() => setLogoError(true)}
                 />
               </div>

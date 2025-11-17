@@ -60,7 +60,7 @@ const LoginPage = () => {
             <img 
               src="/Logo.jpeg" 
               alt="Printo Logo" 
-              className="h-24 sm:h-32 md:h-24 w-auto object-contain mb-4"
+              className="h-16 sm:h-20 md:h-16 w-auto object-contain mb-4"
               onError={() => setLogoError(true)}
             />
           )}

@@ -36,7 +36,7 @@ const RegisterPage = () => {
             <img 
               src="/Logo.jpeg" 
               alt="Printo Logo" 
-              className="h-40 md:h-24 w-auto object-contain mb-4"
+              className="h-24 md:h-16 w-auto object-contain mb-4"
               onError={() => setLogoError(true)}
             />
           )}
