@@ -81,7 +81,8 @@ export const getMyExpenses = asyncHandler(async (req, res) => {
       .populate('approvedBy', 'name email')
       .sort({ date: -1, createdAt: -1 })
       .skip(skip)
-      .limit(limit),
+      .limit(limit)
+      .lean(),
     Expense.countDocuments(filters),
   ]);
 

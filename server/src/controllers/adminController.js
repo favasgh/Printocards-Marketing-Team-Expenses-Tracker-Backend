@@ -86,7 +86,8 @@ export const getAllExpenses = asyncHandler(async (req, res) => {
       .populate('approvedBy', 'name email')
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit),
+      .limit(limit)
+      .lean(),
     Expense.countDocuments(filters),
   ]);
 
@@ -149,56 +150,57 @@ const buildReportData = async (filters, interval) => {
           },
         };
 
-  const [summary] = await Expense.aggregate([
-    matchStage,
-    {
-      $group: {
-        _id: null,
-        totalAmount: { $sum: '$amount' },
-        totalExpenses: { $sum: 1 },
-        pending: { $sum: { $cond: [{ $eq: ['$status', 'Pending'] }, 1, 0] } },
-        approved: { $sum: { $cond: [{ $eq: ['$status', 'Approved'] }, 1, 0] } },
-        rejected: { $sum: { $cond: [{ $eq: ['$status', 'Rejected'] }, 1, 0] } },
-        paid: { $sum: { $cond: [{ $eq: ['$status', 'Paid'] }, 1, 0] } },
+  const [summaryAgg, byCategory, bySalesman, timeline] = await Promise.all([
+    Expense.aggregate([
+      matchStage,
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: '$amount' },
+          totalExpenses: { $sum: 1 },
+          pending: { $sum: { $cond: [{ $eq: ['$status', 'Pending'] }, 1, 0] } },
+          approved: { $sum: { $cond: [{ $eq: ['$status', 'Approved'] }, 1, 0] } },
+          rejected: { $sum: { $cond: [{ $eq: ['$status', 'Rejected'] }, 1, 0] } },
+          paid: { $sum: { $cond: [{ $eq: ['$status', 'Paid'] }, 1, 0] } },
+        },
       },
-    },
+    ]),
+    Expense.aggregate([
+      matchStage,
+      {
+        $group: {
+          _id: '$category',
+          amount: { $sum: '$amount' },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { amount: -1 } },
+    ]),
+    Expense.aggregate([
+      matchStage,
+      {
+        $group: {
+          _id: '$userId',
+          amount: { $sum: '$amount' },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { amount: -1 } },
+    ]),
+    Expense.aggregate([
+      matchStage,
+      {
+        $group: {
+          _id: groupInterval,
+          amount: { $sum: '$amount' },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]),
   ]);
 
-  const byCategory = await Expense.aggregate([
-    matchStage,
-    {
-      $group: {
-        _id: '$category',
-        amount: { $sum: '$amount' },
-        count: { $sum: 1 },
-      },
-    },
-    { $sort: { amount: -1 } },
-  ]);
-
-  const bySalesman = await Expense.aggregate([
-    matchStage,
-    {
-      $group: {
-        _id: '$userId',
-        amount: { $sum: '$amount' },
-        count: { $sum: 1 },
-      },
-    },
-    { $sort: { amount: -1 } },
-  ]);
-
-  const timeline = await Expense.aggregate([
-    matchStage,
-    {
-      $group: {
-        _id: groupInterval,
-        amount: { $sum: '$amount' },
-        count: { $sum: 1 },
-      },
-    },
-    { $sort: { _id: 1 } },
-  ]);
+  const summary = summaryAgg?.[0];
 
   return {
     summary: summary || {
