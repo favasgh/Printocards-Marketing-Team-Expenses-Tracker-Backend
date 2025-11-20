@@ -14,7 +14,8 @@
     "list-admins": "node scripts/listAdmins.js",
     "check-expenses": "node scripts/checkExpenses.js",
     "reset-password": "node scripts/resetAdminPassword.js",
-    "delete-admin": "node scripts/deleteAdmin.js"
+    "delete-admin": "node scripts/deleteAdmin.js",
+    "delete-user": "node scripts/deleteUser.js"
   },
   "keywords": [],
   "author": "",
