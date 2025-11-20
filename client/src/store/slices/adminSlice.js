@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import api from '../../services/api.js';
 
+const todayIso = new Date().toISOString().slice(0, 10);
+
 const initialState = {
   expenses: [],
   pagination: {
@@ -26,6 +28,20 @@ const initialState = {
     byCategory: [],
     bySalesman: [],
     timeline: [],
+  },
+  daily: {
+    date: todayIso,
+    status: 'idle',
+    summary: {
+      totalAmount: 0,
+      totalExpenses: 0,
+      pending: 0,
+      approved: 0,
+      rejected: 0,
+      paid: 0,
+    },
+    salesmen: [],
+    error: null,
   },
 };
 
@@ -73,12 +89,27 @@ export const fetchReports = createAsyncThunk('admin/fetchReports', async (params
   }
 });
 
+export const fetchDailyExpenses = createAsyncThunk('admin/fetchDailyExpenses', async ({ date }, { rejectWithValue }) => {
+  try {
+    const response = await api.get('/admin/daily-expenses', {
+      params: { date },
+    });
+    return response.data;
+  } catch (error) {
+    const message = error.response?.data?.message || 'Unable to load daily expenses';
+    return rejectWithValue(message);
+  }
+});
+
 const adminSlice = createSlice({
   name: 'admin',
   initialState,
   reducers: {
     setAdminFilters(state, action) {
       state.filters = { ...state.filters, ...action.payload };
+    },
+    setDailyDate(state, action) {
+      state.daily.date = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -116,11 +147,28 @@ const adminSlice = createSlice({
       .addCase(fetchReports.rejected, (state, action) => {
         state.error = action.payload;
         toast.error(action.payload);
+      })
+      .addCase(fetchDailyExpenses.pending, (state) => {
+        state.daily.status = 'loading';
+        state.daily.error = null;
+      })
+      .addCase(fetchDailyExpenses.fulfilled, (state, action) => {
+        state.daily.status = 'succeeded';
+        if (action.payload.date) {
+          state.daily.date = action.payload.date.slice(0, 10);
+        }
+        state.daily.summary = action.payload.summary;
+        state.daily.salesmen = action.payload.salesmen;
+      })
+      .addCase(fetchDailyExpenses.rejected, (state, action) => {
+        state.daily.status = 'failed';
+        state.daily.error = action.payload;
+        toast.error(action.payload);
       });
   },
 });
 
-export const { setAdminFilters } = adminSlice.actions;
+export const { setAdminFilters, setDailyDate } = adminSlice.actions;
 export default adminSlice.reducer;
 
 

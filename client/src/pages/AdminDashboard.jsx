@@ -3,50 +3,40 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import api from '../services/api.js';
 import DashboardLayout from '../components/DashboardLayout.jsx';
-import AdminFilters from '../components/AdminFilters.jsx';
 import DashboardStats from '../components/DashboardStats.jsx';
-import AdminExpenseTable from '../components/AdminExpenseTable.jsx';
-import Pagination from '../components/Pagination.jsx';
 import CategoryChart from '../components/charts/CategoryChart.jsx';
 import SalesmanChart from '../components/charts/SalesmanChart.jsx';
 import TimelineChart from '../components/charts/TimelineChart.jsx';
+import SalesmanDailyView from '../components/SalesmanDailyView.jsx';
 import {
-  fetchAdminExpenses,
   fetchReports,
   fetchSalesmen,
-  setAdminFilters,
+  fetchDailyExpenses,
+  setDailyDate,
   updateAdminExpenseStatus,
 } from '../store/slices/adminSlice.js';
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
-  const { expenses, pagination, filters, status, reports, salesmen } = useSelector((state) => state.admin);
-  const [page, setPage] = useState(1);
+  const { reports, salesmen, daily } = useSelector((state) => state.admin);
   const [interval, setInterval] = useState('monthly');
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   useEffect(() => {
     dispatch(fetchSalesmen());
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(
-      fetchAdminExpenses({
-        page,
-        limit: pagination.limit,
-        ...filters,
-        interval, // Pass interval to backend for date range calculation
-      })
-    );
-  }, [dispatch, page, filters.status, filters.salesman, filters.category, filters.startDate, filters.endDate, filters.search, interval]);
-
-  useEffect(() => {
-    dispatch(
-      fetchReports({
-        ...filters,
-        interval,
-      })
-    );
-  }, [dispatch, filters.status, filters.salesman, filters.category, filters.startDate, filters.endDate, filters.search, interval]);
+    if (daily.date) {
+      dispatch(fetchDailyExpenses({ date: daily.date }));
+      dispatch(
+        fetchReports({
+          startDate: daily.date,
+          endDate: daily.date,
+        })
+      );
+    }
+  }, [dispatch, daily.date]);
 
   const stats = useMemo(() => {
     const summary = reports.summary || {
@@ -68,36 +58,71 @@ const AdminDashboard = () => {
     ];
   }, [reports.summary]);
 
-  const handleFiltersChange = (nextFilters) => {
-    dispatch(setAdminFilters(nextFilters));
-    setPage(1);
-  };
-
   const handleStatusUpdate = async (payload) => {
     const result = await dispatch(updateAdminExpenseStatus(payload));
     if (updateAdminExpenseStatus.fulfilled.match(result)) {
-      // Refetch expenses and reports to ensure data is in sync
-      dispatch(
-        fetchAdminExpenses({
-          page,
-          limit: pagination.limit,
-          ...filters,
-          interval,
-        })
-      );
+      dispatch(fetchDailyExpenses({ date: daily.date }));
       dispatch(
         fetchReports({
-          ...filters,
-          interval,
+          startDate: daily.date,
+          endDate: daily.date,
         })
       );
+    }
+  };
+
+  const handleDailyDateChange = (value) => {
+    dispatch(setDailyDate(value));
+  };
+
+  const handleDailyRefresh = () => {
+    if (daily.date) {
+      dispatch(fetchDailyExpenses({ date: daily.date }));
+    }
+  };
+
+  const handleBulkAction = async (status) => {
+    const pendingExpenses = daily.salesmen.flatMap((group) =>
+      group.expenses.filter((expense) => expense.status === 'Pending')
+    );
+
+    if (!pendingExpenses.length) {
+      toast.info('No pending expenses to update.');
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `This will mark ${pendingExpenses.length} pending expenses as ${status}. Continue?`
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setBulkLoading(true);
+    try {
+      for (const expense of pendingExpenses) {
+        await dispatch(
+          updateAdminExpenseStatus({
+            id: expense._id,
+            status,
+            adminComment: `Bulk ${status.toLowerCase()} for ${daily.date}`,
+          })
+        ).unwrap();
+      }
+      toast.success(`Updated ${pendingExpenses.length} expenses to ${status}.`);
+      handleDailyRefresh();
+    } catch (error) {
+      toast.error('Failed to update all expenses.');
+    } finally {
+      setBulkLoading(false);
     }
   };
 
   const handleExport = async (format) => {
     try {
       const params = {
-        ...filters,
+        startDate: daily.date,
+        endDate: daily.date,
         interval,
         format,
       };
@@ -149,7 +174,6 @@ const AdminDashboard = () => {
               value={interval}
               onChange={(event) => {
                 setInterval(event.target.value);
-                setPage(1);
               }}
             >
               <option value="monthly">Monthly</option>
@@ -166,7 +190,6 @@ const AdminDashboard = () => {
       }
     >
       <DashboardStats stats={stats} />
-      <AdminFilters filters={filters} salesmen={salesmen} onChange={handleFiltersChange} />
       <div className="grid gap-4 sm:gap-3 md:gap-4 lg:grid-cols-3">
         <div className="glass-card p-5 sm:p-4 md:p-4 lg:col-span-1">
           <h3 className="text-lg sm:text-base md:text-sm font-semibold text-slate-600">By Category</h3>
@@ -181,9 +204,18 @@ const AdminDashboard = () => {
         <h3 className="text-lg sm:text-base md:text-sm font-semibold text-slate-600">Expense Timeline</h3>
         <TimelineChart data={reports.timeline} />
       </div>
-      <AdminExpenseTable expenses={expenses} onUpdateStatus={handleStatusUpdate} />
-      <Pagination page={pagination.page} pages={pagination.pages} onPageChange={setPage} />
-      {status === 'loading' && <p className="text-center text-sm text-slate-500">Loading latest expenses...</p>}
+      <SalesmanDailyView
+        date={daily.date}
+        summary={daily.summary}
+        salesmen={daily.salesmen}
+        status={daily.status}
+        onDateChange={handleDailyDateChange}
+        onRefresh={handleDailyRefresh}
+        onApproveAll={() => handleBulkAction('Approved')}
+        onRejectAll={() => handleBulkAction('Rejected')}
+        bulkLoading={bulkLoading}
+        onUpdateStatus={handleStatusUpdate}
+      />
     </DashboardLayout>
   );
 };

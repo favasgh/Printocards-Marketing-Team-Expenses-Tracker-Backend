@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { format } from 'date-fns';
 import StatusBadge from './StatusBadge.jsx';
 
-const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
+const AdminExpenseTable = ({ expenses, onUpdateStatus, showSalesmanColumn = true }) => {
   if (!expenses.length) {
     return (
       <div className="glass-card p-6 text-center text-sm text-slate-500">
@@ -34,7 +34,7 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
       <table className="min-w-full divide-y divide-slate-200">
         <thead className="bg-slate-50 text-left text-xs sm:text-sm md:text-sm lg:text-xs font-medium uppercase text-slate-500">
           <tr>
-            <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Salesman</th>
+            {showSalesmanColumn && <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Salesman</th>}
             <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Category</th>
             <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Amount</th>
             <th className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">Date</th>
@@ -46,10 +46,12 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
         <tbody className="divide-y divide-slate-100 text-xs sm:text-sm md:text-sm">
           {expenses.map((expense) => (
             <tr key={expense._id} className="hover:bg-slate-50/60">
-              <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">
-                <div className="font-medium text-slate-800 text-xs sm:text-sm">{expense.userId?.name}</div>
-                <div className="text-xs text-slate-500 hidden sm:block">{expense.userId?.email}</div>
-              </td>
+              {showSalesmanColumn && (
+                <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">
+                  <div className="font-medium text-slate-800 text-xs sm:text-sm">{expense.userId?.name || 'Unknown'}</div>
+                  <div className="text-xs text-slate-500 hidden sm:block">{expense.userId?.email || '—'}</div>
+                </td>
+              )}
               <td className="px-2 py-2 sm:px-3 sm:py-3 md:px-4">
                 <div className="font-medium text-slate-800 text-xs sm:text-sm">{expense.category}</div>
                 {expense.note && <div className="text-xs text-slate-500 mt-0.5 line-clamp-1">{expense.note}</div>}
@@ -166,6 +168,11 @@ AdminExpenseTable.propTypes = {
     })
   ).isRequired,
   onUpdateStatus: PropTypes.func.isRequired,
+  showSalesmanColumn: PropTypes.bool,
+};
+
+AdminExpenseTable.defaultProps = {
+  showSalesmanColumn: true,
 };
 
 export default AdminExpenseTable;
