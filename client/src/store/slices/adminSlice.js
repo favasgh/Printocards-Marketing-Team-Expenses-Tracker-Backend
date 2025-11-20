@@ -27,6 +27,11 @@ const initialState = {
     bySalesman: [],
     timeline: [],
   },
+  salesmanSummary: {
+    data: [],
+    status: 'idle',
+    error: null,
+  },
 };
 
 export const fetchAdminExpenses = createAsyncThunk('admin/fetchExpenses', async (params = {}, { rejectWithValue }) => {
@@ -73,6 +78,16 @@ export const fetchReports = createAsyncThunk('admin/fetchReports', async (params
   }
 });
 
+export const fetchSalesmanSummary = createAsyncThunk('admin/fetchSalesmanSummary', async (_, { rejectWithValue }) => {
+  try {
+    const response = await api.get('/admin/salesmen/summary');
+    return response.data;
+  } catch (error) {
+    const message = error.response?.data?.message || 'Unable to load salesman summary';
+    return rejectWithValue(message);
+  }
+});
+
 const adminSlice = createSlice({
   name: 'admin',
   initialState,
@@ -115,6 +130,19 @@ const adminSlice = createSlice({
       })
       .addCase(fetchReports.rejected, (state, action) => {
         state.error = action.payload;
+        toast.error(action.payload);
+      })
+      .addCase(fetchSalesmanSummary.pending, (state) => {
+        state.salesmanSummary.status = 'loading';
+        state.salesmanSummary.error = null;
+      })
+      .addCase(fetchSalesmanSummary.fulfilled, (state, action) => {
+        state.salesmanSummary.status = 'succeeded';
+        state.salesmanSummary.data = action.payload;
+      })
+      .addCase(fetchSalesmanSummary.rejected, (state, action) => {
+        state.salesmanSummary.status = 'failed';
+        state.salesmanSummary.error = action.payload;
         toast.error(action.payload);
       });
   },
