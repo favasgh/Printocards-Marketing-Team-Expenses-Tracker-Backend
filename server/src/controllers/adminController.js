@@ -132,6 +132,51 @@ export const getSalesmen = asyncHandler(async (req, res) => {
   res.json(users);
 });
 
+export const getSalesmanSummary = asyncHandler(async (req, res) => {
+  const summary = await Expense.aggregate([
+    {
+      $group: {
+        _id: '$userId',
+        pending: {
+          $sum: {
+            $cond: [{ $eq: ['$status', 'Pending'] }, '$amount', 0],
+          },
+        },
+        paid: {
+          $sum: {
+            $cond: [{ $eq: ['$status', 'Paid'] }, '$amount', 0],
+          },
+        },
+      },
+    },
+  ]);
+
+  const userIds = summary.map((item) => item._id).filter(Boolean);
+  const users = await User.find({ _id: { $in: userIds } }).select('name email').lean();
+  const userMap = new Map(users.map((user) => [user._id.toString(), user]));
+
+  const data = summary
+    .map((item) => {
+      const user = userMap.get(item._id?.toString());
+      if (!user) {
+        return null;
+      }
+      return {
+        salesman: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+        },
+        pending: item.pending || 0,
+        paid: item.paid || 0,
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.salesman.name.localeCompare(b.salesman.name));
+
+  res.json(data);
+});
+
 const buildReportData = async (filters, interval) => {
   const matchStage = { $match: filters };
 
@@ -305,5 +350,49 @@ export const getReports = asyncHandler(async (req, res) => {
   }
 
   return res.json(reportData);
+});
+
+export const getSalesmanSummary = asyncHandler(async (req, res) => {
+  const summary = await Expense.aggregate([
+    {
+      $group: {
+        _id: '$userId',
+        pendingAmount: {
+          $sum: {
+            $cond: [{ $eq: ['$status', 'Pending'] }, '$amount', 0],
+          },
+        },
+        paidAmount: {
+          $sum: {
+            $cond: [{ $eq: ['$status', 'Paid'] }, '$amount', 0],
+          },
+        },
+      },
+    },
+    { $sort: { pendingAmount: -1 } },
+  ]);
+
+  const userIds = summary.map((item) => item._id).filter(Boolean);
+  const users = await User.find({ _id: { $in: userIds } })
+    .select('name email')
+    .lean();
+
+  const userMap = users.reduce((acc, user) => {
+    acc.set(user._id.toString(), user);
+    return acc;
+  }, new Map());
+
+  const result = summary.map((item) => {
+    const user = item._id ? userMap.get(item._id.toString()) : null;
+    return {
+      salesmanId: item._id,
+      name: user?.name || 'Unknown',
+      email: user?.email || '',
+      pendingAmount: item.pendingAmount || 0,
+      paidAmount: item.paidAmount || 0,
+    };
+  });
+
+  res.json(result);
 });
 

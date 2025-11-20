@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAllExpenses, getReports, getSalesmen, updateExpenseStatus } from '../controllers/adminController.js';
+import { getAllExpenses, getReports, getSalesmen, getSalesmanSummary, updateExpenseStatus } from '../controllers/adminController.js';
 import { authenticate, authorize } from '../middleware/authMiddleware.js';
 import validateRequest from '../middleware/validateRequest.js';
 import { adminExpenseQuerySchema, reportQuerySchema, statusSchema } from '../validators/expenseValidators.js';
@@ -12,6 +12,7 @@ router.get('/expenses', validateRequest(adminExpenseQuerySchema, 'query'), getAl
 router.put('/expenses/:id', validateRequest(statusSchema), updateExpenseStatus);
 router.get('/reports', validateRequest(reportQuerySchema, 'query'), getReports);
 router.get('/salesmen', getSalesmen);
+router.get('/salesmen/summary', getSalesmanSummary);
 
 export default router;
 
