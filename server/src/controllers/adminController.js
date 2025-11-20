@@ -128,7 +128,7 @@ export const updateExpenseStatus = asyncHandler(async (req, res) => {
 });
 
 export const getSalesmen = asyncHandler(async (req, res) => {
-  const users = await User.find({ role: 'user' }).select('name email role createdAt');
+  const users = await User.find({ role: 'user' }).select('name email role createdAt').lean();
   res.json(users);
 });
 

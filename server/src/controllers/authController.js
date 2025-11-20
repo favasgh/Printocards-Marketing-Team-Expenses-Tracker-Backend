@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { generateToken } from '../utils/token.js';
@@ -5,7 +6,8 @@ import { generateToken } from '../utils/token.js';
 export const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
-  const existingUser = await User.findOne({ email });
+  // Use lean and select only email for existence check
+  const existingUser = await User.findOne({ email }).select('_id').lean();
   if (existingUser) {
     return res.status(409).json({ message: 'Email already exists.' });
   }
@@ -33,12 +35,14 @@ export const loginUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'Email and password are required.' });
   }
 
-  const user = await User.findOne({ email: normalizedEmail });
+  // Select only needed fields for faster query
+  const user = await User.findOne({ email: normalizedEmail }).select('name email role password').lean();
   if (!user) {
     return res.status(401).json({ message: 'Invalid credentials.' });
   }
 
-  const isMatch = await user.comparePassword(password);
+  // Compare password using bcrypt directly since we have lean document
+  const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     return res.status(401).json({ message: 'Invalid credentials.' });
   }
@@ -51,12 +55,6 @@ export const loginUser = asyncHandler(async (req, res) => {
     email: user.email,
     role: user.role,
   };
-
-  console.log('Login successful for user:', {
-    id: safeUser.id,
-    email: safeUser.email,
-    role: safeUser.role,
-  });
 
   return res.json({ token, user: safeUser });
 });
