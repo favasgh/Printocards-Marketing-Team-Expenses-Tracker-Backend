@@ -46,3 +46,7 @@ export const adminExpenseQuerySchema = Joi.object({
   interval: Joi.string().valid('weekly', 'monthly').optional(),
 });
 
+export const dailyExpenseQuerySchema = Joi.object({
+  date: Joi.date().iso().required(),
+});
+
