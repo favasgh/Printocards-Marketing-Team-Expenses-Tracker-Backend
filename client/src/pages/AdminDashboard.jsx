@@ -10,7 +10,6 @@ import Pagination from '../components/Pagination.jsx';
 import CategoryChart from '../components/charts/CategoryChart.jsx';
 import SalesmanChart from '../components/charts/SalesmanChart.jsx';
 import TimelineChart from '../components/charts/TimelineChart.jsx';
-import DailyExpenseSummary from '../components/DailyExpenseSummary.jsx';
 import {
   fetchAdminExpenses,
   fetchReports,
@@ -183,7 +182,6 @@ const AdminDashboard = () => {
         <TimelineChart data={reports.timeline} />
       </div>
       <AdminExpenseTable expenses={expenses} onUpdateStatus={handleStatusUpdate} />
-      <DailyExpenseSummary expenses={expenses} filters={filters} status={status} />
       <Pagination page={pagination.page} pages={pagination.pages} onPageChange={setPage} />
       {status === 'loading' && <p className="text-center text-sm text-slate-500">Loading latest expenses...</p>}
     </DashboardLayout>
