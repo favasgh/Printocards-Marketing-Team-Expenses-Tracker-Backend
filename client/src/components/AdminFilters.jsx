@@ -11,9 +11,15 @@ const statusOptions = [
 
 const AdminFilters = ({ filters, salesmen, onChange }) => {
   const [localFilters, setLocalFilters] = useState(filters);
+  const [singleDate, setSingleDate] = useState('');
 
   useEffect(() => {
     setLocalFilters(filters);
+    if (filters.startDate && filters.endDate && filters.startDate === filters.endDate) {
+      setSingleDate(filters.startDate);
+    } else {
+      setSingleDate('');
+    }
   }, [filters]);
 
   const handleChange = (event) => {
@@ -28,11 +34,24 @@ const AdminFilters = ({ filters, salesmen, onChange }) => {
   const resetFilters = () => {
     const reset = { status: '', salesman: '', category: '', startDate: '', endDate: '', search: '' };
     setLocalFilters(reset);
+    setSingleDate('');
     onChange(reset);
   };
 
+  const handleSingleDateChange = (event) => {
+    const { value } = event.target;
+    setSingleDate(value);
+    if (value) {
+      const next = { ...localFilters, startDate: value, endDate: value };
+      setLocalFilters(next);
+    } else {
+      const next = { ...localFilters, startDate: '', endDate: '' };
+      setLocalFilters(next);
+    }
+  };
+
   return (
-    <div className="glass-card grid gap-3 sm:gap-4 md:gap-4 lg:gap-3 p-4 sm:p-4 md:p-4 lg:p-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+    <div className="glass-card grid gap-3 sm:gap-4 md:gap-4 lg:gap-3 p-4 sm:p-4 md:p-4 lg:p-3 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7">
       <div className="grid gap-1 lg:col-span-1">
         <label className="text-sm sm:text-base md:text-base lg:text-xs font-medium text-slate-600" htmlFor="status">
           Status
@@ -109,6 +128,20 @@ const AdminFilters = ({ filters, salesmen, onChange }) => {
           value={localFilters.search}
           onChange={handleChange}
         />
+      </div>
+      <div className="grid gap-1 lg:col-span-1">
+        <label className="text-sm sm:text-base md:text-base lg:text-xs font-medium text-slate-600" htmlFor="singleDate">
+          Specific Date
+        </label>
+        <input
+          id="singleDate"
+          name="singleDate"
+          type="date"
+          className="input-field"
+          value={singleDate}
+          onChange={handleSingleDateChange}
+        />
+        <p className="text-xs text-slate-400">Sets both start and end date</p>
       </div>
       <div className="flex items-end gap-3 lg:col-span-2">
         <button type="button" className="btn-primary flex-1" onClick={applyFilters}>
