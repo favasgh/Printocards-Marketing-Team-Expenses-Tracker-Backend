@@ -35,8 +35,20 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
       current.allIds.push(expense._id);
 
       const dateKey = new Date(expense.date).toISOString().split('T')[0];
-      current.dates[dateKey] = current.dates[dateKey] || [];
-      current.dates[dateKey].push(expense);
+      const dateEntry = current.dates[dateKey] || {
+        items: [],
+        statusCount: {
+          Pending: 0,
+          Approved: 0,
+          Rejected: 0,
+          Paid: 0,
+        },
+        totalAmount: 0,
+      };
+      dateEntry.items.push(expense);
+      dateEntry.statusCount[expense.status] = (dateEntry.statusCount[expense.status] || 0) + 1;
+      dateEntry.totalAmount += expense.amount;
+      current.dates[dateKey] = dateEntry;
 
       salesmenMap.set(salesmanId, current);
     });
@@ -236,17 +248,53 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {sortedDates.map((dateKey) => {
-                    const items = group.dates[dateKey];
+                    const { items, statusCount, totalAmount } = group.dates[dateKey];
                     const dateLabel = format(new Date(dateKey), 'EEEE, dd MMM yyyy');
-                    const dateTotal = items.reduce((sum, item) => sum + item.amount, 0);
+                    const dateIds = items.map((item) => item._id);
 
                     return (
                       <Fragment key={`${group.salesman.id}-${dateKey}`}>
                         <tr className="bg-slate-100/70 text-[11px] font-semibold uppercase text-slate-600 sm:text-xs">
                           <td colSpan={6} className="px-3 py-2 sm:px-4 sm:py-2">
-                            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                              <span>{dateLabel}</span>
-                              <span className="font-semibold text-slate-700">Total: ₹{dateTotal.toFixed(2)}</span>
+                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                              <div className="flex flex-col gap-1">
+                                <span>{dateLabel}</span>
+                                <div className="flex flex-wrap gap-2 text-[10px] text-slate-500 sm:text-xs">
+                                  <span>Pending: {statusCount.Pending || 0}</span>
+                                  <span>Approved: {statusCount.Approved || 0}</span>
+                                  <span>Rejected: {statusCount.Rejected || 0}</span>
+                                  <span>Paid: {statusCount.Paid || 0}</span>
+                                </div>
+                              </div>
+                              <div className="flex flex-col gap-2 sm:items-end">
+                                <span className="font-semibold text-slate-700">Total: ₹{totalAmount.toFixed(2)}</span>
+                                <div className="flex flex-wrap gap-2">
+                                  <button
+                                    type="button"
+                                    className="btn-primary px-3 py-1 text-[10px] sm:text-xs"
+                                    onClick={() => promptStatusChange(dateIds, 'Approved')}
+                                    disabled={!statusCount.Pending && !statusCount.Rejected}
+                                  >
+                                    Approve All
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn-secondary px-3 py-1 text-[10px] sm:text-xs"
+                                    onClick={() => promptStatusChange(dateIds, 'Rejected')}
+                                    disabled={!statusCount.Pending && !statusCount.Approved}
+                                  >
+                                    Reject All
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn-secondary px-3 py-1 text-[10px] sm:text-xs"
+                                    onClick={() => promptStatusChange(dateIds, 'Paid')}
+                                    disabled={!statusCount.Approved}
+                                  >
+                                    Mark All Paid
+                                  </button>
+                                </div>
+                              </div>
                             </div>
                           </td>
                         </tr>
