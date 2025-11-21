@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
+    
     "create-new-admin": "node scripts/createNewAdmin.js",
     "create-admins": "node scripts/createMultipleAdmins.js",
     "update-admin": "node scripts/updateAdmin.js",
