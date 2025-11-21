@@ -200,37 +200,9 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
                   <span>Paid: {group.statusCount?.Paid || 0}</span>
                 </div>
               </div>
-              <div className="flex flex-col gap-2 sm:items-end">
-                <div className="text-xs sm:text-sm text-slate-500">
-                  <p>Total expenses: {group.totals.count}</p>
-                  <p>Total amount: ₹{group.totals.amount.toFixed(2)}</p>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    className="btn-primary px-3 py-1.5 text-xs sm:text-sm"
-                    onClick={() => promptStatusChange(group.allIds, 'Approved')}
-                    disabled={!group.statusCount?.Pending && !group.statusCount?.Rejected}
-                  >
-                    Approve All
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-secondary px-3 py-1.5 text-xs sm:text-sm"
-                    onClick={() => promptStatusChange(group.allIds, 'Rejected')}
-                    disabled={!group.statusCount?.Pending && !group.statusCount?.Approved}
-                  >
-                    Reject All
-                  </button>
-                  <button
-                    type="button"
-                    className="btn-secondary px-3 py-1.5 text-xs sm:text-sm"
-                    onClick={() => promptStatusChange(group.allIds, 'Paid')}
-                    disabled={!group.statusCount?.Approved}
-                  >
-                    Mark All Paid
-                  </button>
-                </div>
+              <div className="text-xs sm:text-sm text-slate-500 text-right">
+                <p>Total expenses: {group.totals.count}</p>
+                <p>Total amount: ₹{group.totals.amount.toFixed(2)}</p>
               </div>
             </div>
 
@@ -258,7 +230,7 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
                           <td colSpan={6} className="px-3 py-2 sm:px-4 sm:py-2">
                             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                               <div className="flex flex-col gap-1">
-                                <span>{dateLabel}</span>
+                                <span className="text-xl font-bold text-slate-900">{dateLabel}</span>
                                 <div className="flex flex-wrap gap-2 text-[11px] font-semibold text-slate-600 sm:text-sm">
                                   <span>Pending: {statusCount.Pending || 0}</span>
                                   <span>Approved: {statusCount.Approved || 0}</span>
