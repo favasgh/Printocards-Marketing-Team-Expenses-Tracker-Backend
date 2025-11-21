@@ -19,11 +19,20 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
           amount: 0,
           count: 0,
         },
+        statusCount: {
+          Pending: 0,
+          Approved: 0,
+          Rejected: 0,
+          Paid: 0,
+        },
+        allIds: [],
         dates: {},
       };
 
       current.totals.amount += expense.amount;
       current.totals.count += 1;
+      current.statusCount[expense.status] = (current.statusCount[expense.status] || 0) + 1;
+      current.allIds.push(expense._id);
 
       const dateKey = new Date(expense.date).toISOString().split('T')[0];
       current.dates[dateKey] = current.dates[dateKey] || [];
@@ -37,13 +46,13 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
 
   if (!groupedData.length) {
     return (
-      <div className="glass-card p-6 text-center text-sm text-slate-500">
-        No expenses found for the selected filters.
-      </div>
+      <div className="glass-card p-6 text-center text-sm text-slate-500">No expenses found for the selected filters.</div>
     );
   }
 
-  const handleStatusChange = (expense, status) => {
+  const promptStatusChange = (expenseIds, status) => {
+    if (!expenseIds.length) return;
+
     const statusMessages = {
       Pending: 'revert to Pending',
       Approved: 'approve',
@@ -51,14 +60,20 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
       Paid: 'mark as Paid',
     };
     const actionMessage = statusMessages[status] || status.toLowerCase();
-    const comment = window.prompt(`Add a comment for ${actionMessage} (optional):`, expense.adminComment || '');
-    if (comment !== null) {
+    const comment = window.prompt(`Add a comment for ${actionMessage} (optional):`, '');
+    if (comment === null) return;
+
+    expenseIds.forEach((id) => {
       onUpdateStatus({
-        id: expense._id,
+        id,
         status,
         adminComment: comment || '',
       });
-    }
+    });
+  };
+
+  const handleSingleStatusChange = (expense, status) => {
+    promptStatusChange([expense._id], status);
   };
 
   const renderExpenseRow = (expense) => (
@@ -92,14 +107,14 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
               <button
                 type="button"
                 className="btn-primary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap"
-                onClick={() => handleStatusChange(expense, 'Approved')}
+                        onClick={() => handleSingleStatusChange(expense, 'Approved')}
               >
                 Approve
               </button>
               <button
                 type="button"
                 className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm text-danger whitespace-nowrap"
-                onClick={() => handleStatusChange(expense, 'Rejected')}
+                        onClick={() => handleSingleStatusChange(expense, 'Rejected')}
               >
                 Reject
               </button>
@@ -110,14 +125,14 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
               <button
                 type="button"
                 className="btn-primary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm bg-indigo-600 hover:bg-indigo-700 whitespace-nowrap"
-                onClick={() => handleStatusChange(expense, 'Paid')}
+                        onClick={() => handleSingleStatusChange(expense, 'Paid')}
               >
                 Mark Paid
               </button>
               <button
                 type="button"
                 className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap"
-                onClick={() => handleStatusChange(expense, 'Pending')}
+                        onClick={() => handleSingleStatusChange(expense, 'Pending')}
               >
                 Undo Approval
               </button>
@@ -128,14 +143,14 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
               <button
                 type="button"
                 className="btn-primary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap"
-                onClick={() => handleStatusChange(expense, 'Approved')}
+                        onClick={() => handleSingleStatusChange(expense, 'Approved')}
               >
                 Approve
               </button>
               <button
                 type="button"
                 className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap"
-                onClick={() => handleStatusChange(expense, 'Pending')}
+                        onClick={() => handleSingleStatusChange(expense, 'Pending')}
               >
                 Undo Rejection
               </button>
@@ -145,7 +160,7 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
             <button
               type="button"
               className="btn-secondary px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm whitespace-nowrap"
-              onClick={() => handleStatusChange(expense, 'Approved')}
+                      onClick={() => handleSingleStatusChange(expense, 'Approved')}
             >
               Undo Paid
             </button>
@@ -162,14 +177,48 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
 
         return (
           <div key={group.salesman.id} className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="flex flex-col gap-2 border-b border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 border-b border-slate-200 p-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-base font-semibold text-slate-900">{group.salesman.name}</p>
                 <p className="text-xs text-slate-500">{group.salesman.email}</p>
+                <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-slate-500 sm:text-xs">
+                  <span>Pending: {group.statusCount?.Pending || 0}</span>
+                  <span>Approved: {group.statusCount?.Approved || 0}</span>
+                  <span>Rejected: {group.statusCount?.Rejected || 0}</span>
+                  <span>Paid: {group.statusCount?.Paid || 0}</span>
+                </div>
               </div>
-              <div className="text-xs sm:text-sm text-slate-500">
-                <p>Total expenses: {group.totals.count}</p>
-                <p>Total amount: ₹{group.totals.amount.toFixed(2)}</p>
+              <div className="flex flex-col gap-2 sm:items-end">
+                <div className="text-xs sm:text-sm text-slate-500">
+                  <p>Total expenses: {group.totals.count}</p>
+                  <p>Total amount: ₹{group.totals.amount.toFixed(2)}</p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className="btn-primary px-3 py-1.5 text-xs sm:text-sm"
+                    onClick={() => promptStatusChange(group.allIds, 'Approved')}
+                    disabled={!group.statusCount?.Pending && !group.statusCount?.Rejected}
+                  >
+                    Approve All
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary px-3 py-1.5 text-xs sm:text-sm"
+                    onClick={() => promptStatusChange(group.allIds, 'Rejected')}
+                    disabled={!group.statusCount?.Pending && !group.statusCount?.Approved}
+                  >
+                    Reject All
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-secondary px-3 py-1.5 text-xs sm:text-sm"
+                    onClick={() => promptStatusChange(group.allIds, 'Paid')}
+                    disabled={!group.statusCount?.Approved}
+                  >
+                    Mark All Paid
+                  </button>
+                </div>
               </div>
             </div>
 
