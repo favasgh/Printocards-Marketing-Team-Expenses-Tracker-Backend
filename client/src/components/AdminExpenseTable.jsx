@@ -193,7 +193,7 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
               <div>
                 <p className="text-base font-semibold text-slate-900">{group.salesman.name}</p>
                 <p className="text-xs text-slate-500">{group.salesman.email}</p>
-                <div className="mt-2 flex flex-wrap gap-2 text-[11px] text-slate-500 sm:text-xs">
+                <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-slate-600 sm:text-sm">
                   <span>Pending: {group.statusCount?.Pending || 0}</span>
                   <span>Approved: {group.statusCount?.Approved || 0}</span>
                   <span>Rejected: {group.statusCount?.Rejected || 0}</span>
@@ -259,7 +259,7 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
                             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                               <div className="flex flex-col gap-1">
                                 <span>{dateLabel}</span>
-                                <div className="flex flex-wrap gap-2 text-[10px] text-slate-500 sm:text-xs">
+                                <div className="flex flex-wrap gap-2 text-[11px] font-semibold text-slate-600 sm:text-sm">
                                   <span>Pending: {statusCount.Pending || 0}</span>
                                   <span>Approved: {statusCount.Approved || 0}</span>
                                   <span>Rejected: {statusCount.Rejected || 0}</span>
