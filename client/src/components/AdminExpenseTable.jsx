@@ -189,10 +189,10 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
 
         return (
           <div key={group.salesman.id} className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="flex flex-col gap-2 border-b border-slate-200 p-4">
+            <div className="flex flex-col items-center gap-2 border-b border-slate-200 p-4 text-center">
               <p className="text-2xl font-bold text-slate-900">{group.salesman.name}</p>
               <p className="text-xs text-slate-500">{group.salesman.email}</p>
-              <div className="mt-2 flex flex-wrap gap-2 text-xs font-semibold text-slate-600 sm:text-sm">
+              <div className="mt-2 flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-slate-600 sm:text-sm">
                 <span>Pending: {group.statusCount?.Pending || 0}</span>
                 <span>Approved: {group.statusCount?.Approved || 0}</span>
                 <span>Rejected: {group.statusCount?.Rejected || 0}</span>
