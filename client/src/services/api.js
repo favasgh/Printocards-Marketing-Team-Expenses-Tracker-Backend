@@ -2,16 +2,50 @@ import axios from 'axios';
 
 // Ensure API URL ends with /api
 const getApiUrl = () => {
-  const envUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-  // If URL doesn't end with /api, add it
-  if (envUrl && !envUrl.endsWith('/api')) {
-    return envUrl.endsWith('/') ? `${envUrl}api` : `${envUrl}/api`;
+  // In development, always use localhost if running on localhost
+  const isLocalhost = typeof window !== 'undefined' && 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  
+  const envUrl = import.meta.env.VITE_API_URL;
+  const isDev = import.meta.env.DEV || import.meta.env.MODE === 'development';
+  
+  // If on localhost and env URL points to production, force localhost
+  if (isLocalhost) {
+    if (envUrl && (envUrl.includes('onrender.com') || envUrl.includes('netlify.app') || envUrl.includes('vercel.app'))) {
+      const localUrl = 'http://localhost:5000/api';
+      if (isDev) {
+        console.log('🔧 Overriding production API URL with local:', localUrl);
+        console.log('   Original VITE_API_URL:', envUrl);
+      }
+      return localUrl;
+    }
+    // If no env URL or it's already localhost, use localhost
+    if (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1')) {
+      const localUrl = 'http://localhost:5000/api';
+      if (isDev) {
+        console.log('🔧 Using local API:', localUrl);
+      }
+      return localUrl;
+    }
   }
-  return envUrl;
+  
+  // Use environment URL or default to localhost
+  const finalUrl = envUrl || 'http://localhost:5000/api';
+  // If URL doesn't end with /api, add it
+  if (finalUrl && !finalUrl.endsWith('/api')) {
+    return finalUrl.endsWith('/') ? `${finalUrl}api` : `${finalUrl}/api`;
+  }
+  return finalUrl;
 };
 
+const apiBaseURL = getApiUrl();
+if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
+  console.log('🌐 API Base URL:', apiBaseURL);
+  console.log('🌐 VITE_API_URL env:', import.meta.env.VITE_API_URL || '(not set)');
+}
+
 const api = axios.create({
-  baseURL: getApiUrl(),
+  baseURL: apiBaseURL,
   withCredentials: false,
 });
 

@@ -38,7 +38,12 @@ export const registerUser = createAsyncThunk('auth/register', async (formData, {
     const response = await api.post('/auth/register', formData);
     return response.data;
   } catch (error) {
-    const message = error.response?.data?.message || 'Registration failed';
+    // Handle validation errors
+    if (error.response?.data?.errors) {
+      const messages = error.response.data.errors.join(', ');
+      return rejectWithValue(messages);
+    }
+    const message = error.response?.data?.message || error.message || 'Registration failed. Please check your connection.';
     return rejectWithValue(message);
   }
 });

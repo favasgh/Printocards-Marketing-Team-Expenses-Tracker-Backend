@@ -1,15 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { registerUser } from '../store/slices/authSlice.js';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import Footer from '../components/Footer.jsx';
 
 const RegisterPage = () => {
   const dispatch = useDispatch();
-  const { token, status } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+  const { token, user, status, error } = useSelector((state) => state.auth);
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [logoError, setLogoError] = useState(false);
+
+  // Redirect after successful registration
+  useEffect(() => {
+    if (token && user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [token, user, navigate]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -21,8 +29,8 @@ const RegisterPage = () => {
     dispatch(registerUser(form));
   };
 
-  if (token) {
-    return <Navigate to="/dashboard" replace />;
+  if (token && user) {
+    return null; // Redirect will be handled by useEffect
   }
 
   return (
@@ -43,6 +51,11 @@ const RegisterPage = () => {
         </div>
         <p className="mt-2 text-sm text-slate-500 text-center">Join the field team to submit expenses on the go.</p>
 
+        {error && status === 'failed' && (
+          <div className="mt-4 rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-700">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="mt-6 grid gap-4">
           <div className="grid gap-1">
             <label className="text-lg md:text-sm font-medium text-slate-600" htmlFor="name">
