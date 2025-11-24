@@ -148,7 +148,7 @@ const ExpenseForm = ({ onSuccess = null }) => {
             placeholder={form.category === 'Own Vehicle Fuel' ? 'Enter kilometers' : ''}
           />
           {form.category === 'Own Vehicle Fuel' && form.amount && (
-            <p className="text-xs text-slate-500">
+            <p className="text-sm sm:text-base font-bold text-slate-700">
               Amount: {Number(form.amount) * 3.5} ₹ (3.5 ₹ per kilometer)
             </p>
           )}
