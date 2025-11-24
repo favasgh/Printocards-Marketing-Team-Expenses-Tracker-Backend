@@ -5,7 +5,7 @@ import { createExpense } from '../store/slices/expensesSlice.js';
 import { fileToBase64 } from '../utils/image.js';
 import { toast } from 'react-toastify';
 
-const categories = ['Travel', 'Food', 'Fuel', 'Lodging', 'Supplies', 'Other'];
+const categories = ['Travel', 'Food', 'Fuel', 'Room', 'EV Charging', 'Other'];
 
 const initialForm = {
   category: '',
