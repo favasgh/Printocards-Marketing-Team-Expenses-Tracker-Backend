@@ -6,13 +6,20 @@ import { generateToken } from '../utils/token.js';
 export const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
+  // Normalize email to lowercase and trim (matching schema behavior)
+  const normalizedEmail = email?.toLowerCase().trim();
+
+  if (!normalizedEmail || !password || !name) {
+    return res.status(400).json({ message: 'Name, email, and password are required.' });
+  }
+
   // Use lean and select only email for existence check
-  const existingUser = await User.findOne({ email }).select('_id').lean();
+  const existingUser = await User.findOne({ email: normalizedEmail }).select('_id').lean();
   if (existingUser) {
     return res.status(409).json({ message: 'Email already exists.' });
   }
 
-  const user = await User.create({ name, email, password });
+  const user = await User.create({ name, email: normalizedEmail, password });
 
   const token = generateToken({ id: user._id, role: user.role });
   const safeUser = {
