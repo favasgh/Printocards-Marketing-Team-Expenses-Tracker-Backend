@@ -69,11 +69,6 @@ export const getMyExpenses = asyncHandler(async (req, res) => {
   const filters = buildQueryFilters(queryParams);
   filters.userId = req.user._id;
 
-  // Log for debugging
-  console.log('Fetching expenses for user:', req.user._id);
-  console.log('Filters:', JSON.stringify(filters, null, 2));
-  console.log('Page:', page, 'Limit:', limit, 'Skip:', skip);
-
   // Sort by date descending, fallback to createdAt if date is missing
   // Populate approvedBy to show which admin approved/rejected/paid
   const [records, total] = await Promise.all([
