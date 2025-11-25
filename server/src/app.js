@@ -5,10 +5,12 @@ import compression from 'compression';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
+import { Writable } from 'stream';
 import expenseRoutes from './routes/expenseRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import errorHandler from './middleware/errorHandler.js';
+import { logger } from './utils/logger.js';
 
 const app = express();
 
@@ -44,8 +46,8 @@ const corsOptions = {
     } else {
       // Log for debugging in development only
       if (process.env.NODE_ENV !== 'production') {
-        console.log('CORS blocked origin:', origin);
-        console.log('Allowed origins:', allowedOrigins);
+        logger.log('CORS blocked origin:', origin);
+        logger.log('Allowed origins:', allowedOrigins);
       }
       callback(new Error('Not allowed by CORS'));
     }
@@ -77,8 +79,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(compression());
 
+// Fast async logging - use 'tiny' format (much faster than 'dev') with async stream
 if (process.env.NODE_ENV !== 'production') {
-  app.use(morgan('dev'));
+  const asyncStream = new Writable({
+    write(chunk, encoding, callback) {
+      // Write asynchronously without blocking
+      setImmediate(() => {
+        process.stdout.write(chunk, encoding);
+        callback();
+      });
+    },
+  });
+  app.use(morgan('tiny', { stream: asyncStream }));
 }
 
 app.get('/', (req, res) => {

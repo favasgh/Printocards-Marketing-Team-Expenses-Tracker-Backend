@@ -10,6 +10,7 @@ dotenv.config({ path: join(__dirname, '.env') });
 import http from 'http';
 import app from './src/app.js';
 import connectDB from './src/config/db.js';
+import { logger } from './src/utils/logger.js';
 
 const PORT = process.env.PORT || 5000;
 
@@ -19,16 +20,13 @@ const startServer = async () => {
     const server = http.createServer(app);
 
     server.listen(PORT, () => {
-      // eslint-disable-next-line no-console
-      console.log(`Server running on port ${PORT}`);
+      logger.log(`Server running on port ${PORT}`);
     });
 
     const gracefulShutdown = (signal) => {
-      // eslint-disable-next-line no-console
-      console.log(`${signal} received. Shutting down gracefully...`);
+      logger.log(`${signal} received. Shutting down gracefully...`);
       server.close(() => {
-        // eslint-disable-next-line no-console
-        console.log('HTTP server closed');
+        logger.log('HTTP server closed');
         process.exit(0);
       });
     };
@@ -37,18 +35,15 @@ const startServer = async () => {
     process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
     process.on('unhandledRejection', (err) => {
-      // eslint-disable-next-line no-console
-      console.error('Unhandled Rejection:', err);
+      logger.error('Unhandled Rejection:', err);
     });
 
     process.on('uncaughtException', (err) => {
-      // eslint-disable-next-line no-console
-      console.error('Uncaught Exception:', err);
+      logger.error('Uncaught Exception:', err);
       gracefulShutdown('UNCAUGHT_EXCEPTION');
     });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('Failed to start server:', error);
+    logger.error('Failed to start server:', error);
     process.exit(1);
   }
 };
