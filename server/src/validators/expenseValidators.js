@@ -12,7 +12,7 @@ export const updateExpenseSchema = expenseSchema.fork(['category', 'amount', 'da
 
 export const statusSchema = Joi.object({
   status: Joi.string().valid('Pending', 'Approved', 'Rejected', 'Paid').required(),
-  adminComment: Joi.string().allow('', null).max(300),
+  adminComment: Joi.string().allow('', null).max(300).optional().default(''),
 });
 
 export const reportQuerySchema = Joi.object({

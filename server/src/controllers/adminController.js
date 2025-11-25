@@ -104,7 +104,8 @@ export const getAllExpenses = asyncHandler(async (req, res) => {
 
 export const updateExpenseStatus = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { status, adminComment } = req.body;
+  // Get validated data from middleware (after Joi validation)
+  const { status, adminComment = '' } = req.body;
 
   if (!mongoose.isValidObjectId(id)) {
     return res.status(400).json({ message: 'Invalid expense id.' });
@@ -114,7 +115,7 @@ export const updateExpenseStatus = asyncHandler(async (req, res) => {
   const updateData = {
     $set: {
       status,
-      adminComment: adminComment !== undefined && adminComment !== null ? String(adminComment) : '',
+      adminComment: String(adminComment || ''),
     },
   };
 
