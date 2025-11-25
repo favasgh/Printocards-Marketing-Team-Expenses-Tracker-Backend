@@ -5,7 +5,7 @@ import { createExpense } from '../store/slices/expensesSlice.js';
 import { fileToBase64 } from '../utils/image.js';
 import { toast } from 'react-toastify';
 
-const categories = ['Travel', 'Food', 'Fuel', 'Lodging', 'Supplies', 'Other'];
+const categories = ['Travel', 'Food', 'Office Vehicle Fuel', 'Own Vehicle Fuel', 'Room', 'EV Charging', 'Other'];
 
 const initialForm = {
   category: '',
@@ -57,9 +57,16 @@ const ExpenseForm = ({ onSuccess = null }) => {
     }
 
     setLoading(true);
+    
+    // Calculate amount for "Own Vehicle Fuel" category (kilometers * 3.5)
+    let calculatedAmount = Number(form.amount);
+    if (form.category === 'Own Vehicle Fuel') {
+      calculatedAmount = Number(form.amount) * 3.5;
+    }
+    
     const expensePayload = {
       ...form,
-      amount: Number(form.amount),
+      amount: calculatedAmount,
     };
 
     const imageBase64 = file && file.type.startsWith('image/') ? await fileToBase64(file) : null;
@@ -126,19 +133,25 @@ const ExpenseForm = ({ onSuccess = null }) => {
       <div className="grid gap-1 md:grid-cols-2 md:gap-4">
         <div className="grid gap-1">
           <label className="text-xl sm:text-lg md:text-base lg:text-sm font-medium text-slate-600" htmlFor="amount">
-            Amount
+            {form.category === 'Own Vehicle Fuel' ? 'Kilometer Driven' : 'Amount'}
           </label>
           <input
             id="amount"
             name="amount"
             type="number"
             min="0"
-            step="0.01"
+            step={form.category === 'Own Vehicle Fuel' ? '1' : '0.01'}
             className="input-field"
             value={form.amount}
             onChange={handleChange}
             required
+            placeholder={form.category === 'Own Vehicle Fuel' ? 'Enter kilometers' : ''}
           />
+          {form.category === 'Own Vehicle Fuel' && form.amount && (
+            <p className="text-sm sm:text-base font-bold text-slate-700">
+              Amount: {Number(form.amount) * 3.5} ₹ (3.5 ₹ per kilometer)
+            </p>
+          )}
         </div>
         <div className="grid gap-1">
           <label className="text-xl sm:text-lg md:text-base lg:text-sm font-medium text-slate-600" htmlFor="date">

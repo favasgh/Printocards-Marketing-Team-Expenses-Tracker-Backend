@@ -1,0 +1,60 @@
+warning: in the working copy of 'src/components/ExpenseForm.jsx', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/src/components/ExpenseForm.jsx b/src/components/ExpenseForm.jsx[m
+[1mindex 637f54a..23458b8 100644[m
+[1m--- a/src/components/ExpenseForm.jsx[m
+[1m+++ b/src/components/ExpenseForm.jsx[m
+[36m@@ -5,7 +5,7 @@[m [mimport { createExpense } from '../store/slices/expensesSlice.js';[m
+ import { fileToBase64 } from '../utils/image.js';[m
+ import { toast } from 'react-toastify';[m
+ [m
+[31m-const categories = ['Travel', 'Food', 'Fuel', 'Lodging', 'Supplies', 'Other'];[m
+[32m+[m[32mconst categories = ['Travel', 'Food', 'Office Vehicle Fuel', 'Own Vehicle Fuel', 'Room', 'EV Charging', 'Other'];[m
+ [m
+ const initialForm = {[m
+   category: '',[m
+[36m@@ -57,9 +57,16 @@[m [mconst ExpenseForm = ({ onSuccess = null }) => {[m
+     }[m
+ [m
+     setLoading(true);[m
+[32m+[m[41m    [m
+[32m+[m[32m    // Calculate amount for "Own Vehicle Fuel" category (kilometers * 3.5)[m
+[32m+[m[32m    let calculatedAmount = Number(form.amount);[m
+[32m+[m[32m    if (form.category === 'Own Vehicle Fuel') {[m
+[32m+[m[32m      calculatedAmount = Number(form.amount) * 3.5;[m
+[32m+[m[32m    }[m
+[32m+[m[41m    [m
+     const expensePayload = {[m
+       ...form,[m
+[31m-      amount: Number(form.amount),[m
+[32m+[m[32m      amount: calculatedAmount,[m
+     };[m
+ [m
+     const imageBase64 = file && file.type.startsWith('image/') ? await fileToBase64(file) : null;[m
+[36m@@ -126,19 +133,25 @@[m [mconst ExpenseForm = ({ onSuccess = null }) => {[m
+       <div className="grid gap-1 md:grid-cols-2 md:gap-4">[m
+         <div className="grid gap-1">[m
+           <label className="text-xl sm:text-lg md:text-base lg:text-sm font-medium text-slate-600" htmlFor="amount">[m
+[31m-            Amount[m
+[32m+[m[32m            {form.category === 'Own Vehicle Fuel' ? 'Kilometer Driven' : 'Amount'}[m
+           </label>[m
+           <input[m
+             id="amount"[m
+             name="amount"[m
+             type="number"[m
+             min="0"[m
+[31m-            step="0.01"[m
+[32m+[m[32m            step={form.category === 'Own Vehicle Fuel' ? '1' : '0.01'}[m
+             className="input-field"[m
+             value={form.amount}[m
+             onChange={handleChange}[m
+             required[m
+[32m+[m[32m            placeholder={form.category === 'Own Vehicle Fuel' ? 'Enter kilometers' : ''}[m
+           />[m
+[32m+[m[32m          {form.category === 'Own Vehicle Fuel' && form.amount && ([m
+[32m+[m[32m            <p className="text-sm sm:text-base font-bold text-slate-700">[m
+[32m+[m[32m              Amount: {Number(form.amount) * 3.5} ₹ (3.5 ₹ per kilometer)[m
+[32m+[m[32m            </p>[m
+[32m+[m[32m          )}[m
+         </div>[m
+         <div className="grid gap-1">[m
+           <label className="text-xl sm:text-lg md:text-base lg:text-sm font-medium text-slate-600" htmlFor="date">[m
