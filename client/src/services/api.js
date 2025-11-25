@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logger } from '../utils/logger.js';
 
 // Ensure API URL ends with /api
 const getApiUrl = () => {
@@ -14,8 +15,8 @@ const getApiUrl = () => {
     if (envUrl && (envUrl.includes('onrender.com') || envUrl.includes('netlify.app') || envUrl.includes('vercel.app'))) {
       const localUrl = 'http://localhost:5000/api';
       if (isDev) {
-        console.log('🔧 Overriding production API URL with local:', localUrl);
-        console.log('   Original VITE_API_URL:', envUrl);
+        logger.log('🔧 Overriding production API URL with local:', localUrl);
+        logger.log('   Original VITE_API_URL:', envUrl);
       }
       return localUrl;
     }
@@ -23,7 +24,7 @@ const getApiUrl = () => {
     if (!envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1')) {
       const localUrl = 'http://localhost:5000/api';
       if (isDev) {
-        console.log('🔧 Using local API:', localUrl);
+        logger.log('🔧 Using local API:', localUrl);
       }
       return localUrl;
     }
@@ -40,8 +41,8 @@ const getApiUrl = () => {
 
 const apiBaseURL = getApiUrl();
 if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
-  console.log('🌐 API Base URL:', apiBaseURL);
-  console.log('🌐 VITE_API_URL env:', import.meta.env.VITE_API_URL || '(not set)');
+  logger.log('🌐 API Base URL:', apiBaseURL);
+  logger.log('🌐 VITE_API_URL env:', import.meta.env.VITE_API_URL || '(not set)');
 }
 
 const api = axios.create({

@@ -4,6 +4,7 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { loginUser } from '../store/slices/authSlice.js';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import Footer from '../components/Footer.jsx';
+import { logger } from '../utils/logger.js';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -16,18 +17,18 @@ const LoginPage = () => {
   // Redirect based on user role after login
   useEffect(() => {
     if (token && user) {
-      console.log('LoginPage redirect check - user:', user);
-      console.log('LoginPage redirect check - user.role:', user.role);
+      logger.log('LoginPage redirect check - user:', user);
+      logger.log('LoginPage redirect check - user.role:', user.role);
       const from = location.state?.from?.pathname;
       if (from) {
         navigate(from, { replace: true });
       } else {
         // Redirect based on role
         if (user.role === 'admin') {
-          console.log('Redirecting to /admin');
+          logger.log('Redirecting to /admin');
           navigate('/admin', { replace: true });
         } else {
-          console.log('Redirecting to /dashboard');
+          logger.log('Redirecting to /dashboard');
           navigate('/dashboard', { replace: true });
         }
       }

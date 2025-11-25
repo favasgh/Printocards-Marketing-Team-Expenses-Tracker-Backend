@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import api, { setAuthToken } from '../../services/api.js';
+import { logger } from '../../utils/logger.js';
 
 const STORAGE_KEY = 'printo_auth';
 
@@ -20,7 +21,7 @@ const loadStoredAuth = () => {
     }
     return parsed;
   } catch (error) {
-    console.error('Failed to parse stored auth', error);
+    logger.error('Failed to parse stored auth', error);
     return { user: null, token: null };
   }
 };
@@ -51,14 +52,14 @@ export const registerUser = createAsyncThunk('auth/register', async (formData, {
 export const loginUser = createAsyncThunk('auth/login', async (formData, { rejectWithValue }) => {
   try {
     const response = await api.post('/auth/login', formData);
-    console.log('Login response:', response.data);
+    logger.log('Login response:', response.data);
     // Ensure user object has role property
     if (response.data?.user && !response.data.user.role) {
-      console.warn('Warning: User object missing role property');
+      logger.warn('Warning: User object missing role property');
     }
     return response.data;
   } catch (error) {
-    console.error('Login error:', error.response?.data || error.message);
+    logger.error('Login error:', error.response?.data || error.message);
     const message = error.response?.data?.message || 'Login failed';
     return rejectWithValue(message);
   }
@@ -126,8 +127,8 @@ const authSlice = createSlice({
         state.status = 'succeeded';
         state.user = action.payload.user;
         state.token = action.payload.token;
-        console.log('Login successful, user:', action.payload.user);
-        console.log('User role:', action.payload.user?.role);
+        logger.log('Login successful, user:', action.payload.user);
+        logger.log('User role:', action.payload.user?.role);
         setAuthToken(action.payload.token);
         persistAuth({ user: action.payload.user, token: action.payload.token });
         toast.success(`Welcome back, ${action.payload.user.name}`);
