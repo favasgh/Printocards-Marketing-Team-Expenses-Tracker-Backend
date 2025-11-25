@@ -18,10 +18,12 @@ const AdminDashboard = () => {
   const [page, setPage] = useState(1);
   const [interval, setInterval] = useState('monthly');
 
+  // Load salesmen immediately (lightweight query)
   useEffect(() => {
     dispatch(fetchSalesmen());
   }, [dispatch]);
 
+  // Load expenses immediately (needed for table)
   useEffect(() => {
     dispatch(
       fetchAdminExpenses({
@@ -33,13 +35,19 @@ const AdminDashboard = () => {
     );
   }, [dispatch, page, filters.status, filters.salesman, filters.category, filters.startDate, filters.endDate, filters.search, interval]);
 
+  // Defer reports loading - load after initial render to improve perceived performance
   useEffect(() => {
-    dispatch(
-      fetchReports({
-        ...filters,
-        interval,
-      })
-    );
+    // Use setTimeout to defer reports loading, allowing expenses to load first
+    const timer = setTimeout(() => {
+      dispatch(
+        fetchReports({
+          ...filters,
+          interval,
+        })
+      );
+    }, 100); // Small delay to prioritize expenses loading
+
+    return () => clearTimeout(timer);
   }, [dispatch, filters.status, filters.salesman, filters.category, filters.startDate, filters.endDate, filters.search, interval]);
 
   const stats = useMemo(() => {
