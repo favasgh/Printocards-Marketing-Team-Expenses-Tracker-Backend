@@ -1,3 +1,5 @@
+import { logger } from '../utils/logger.js';
+
 const validateRequest =
   (schema, property = 'body') =>
   (req, res, next) => {
@@ -17,6 +19,13 @@ const validateRequest =
 
     if (error) {
       const messages = error.details.map((detail) => detail.message);
+      // Log validation errors for debugging
+      logger.error('Validation error:', {
+        path: req.path,
+        method: req.method,
+        body: req.body,
+        errors: messages,
+      });
       return res.status(400).json({ message: 'Validation failed', errors: messages });
     }
 

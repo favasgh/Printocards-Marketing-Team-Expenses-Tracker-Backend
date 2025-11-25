@@ -110,18 +110,20 @@ export const updateExpenseStatus = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'Invalid expense id.' });
   }
 
-  // Build update object
+  // Build update object using $set for regular fields
   const updateData = {
-    status,
-    adminComment: adminComment || '',
+    $set: {
+      status,
+      adminComment: adminComment !== undefined && adminComment !== null ? String(adminComment) : '',
+    },
   };
 
-  // Only set approvedBy if status is not Pending (Pending means not yet reviewed)
+  // Only set approvedBy if status is not Pending
   if (status !== 'Pending') {
-    updateData.approvedBy = req.user.id || req.user._id;
+    updateData.$set.approvedBy = req.user.id || req.user._id;
   } else {
-    // Clear approvedBy when reverting to Pending
-    updateData.approvedBy = null;
+    // When reverting to Pending, unset approvedBy
+    updateData.$unset = { approvedBy: '' };
   }
 
   // Use findOneAndUpdate for better performance and atomic update
