@@ -75,14 +75,14 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
     const comment = window.prompt(`Add a comment for ${actionMessage} (optional):`, '');
     if (comment === null) return; // User cancelled
 
-    // Ensure adminComment is always a string, never undefined
-    const adminComment = comment !== null ? (comment || '') : '';
+    // Ensure adminComment is always a string, never undefined or null
+    const adminComment = typeof comment === 'string' ? comment : '';
 
     expenseIds.forEach((id) => {
       onUpdateStatus({
         id,
         status,
-        adminComment,
+        adminComment: adminComment || '', // Explicitly ensure it's a string
       });
     });
   };
