@@ -110,14 +110,24 @@ export const updateExpenseStatus = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'Invalid expense id.' });
   }
 
+  // Build update object
+  const updateData = {
+    status,
+    adminComment: adminComment || '',
+  };
+
+  // Only set approvedBy if status is not Pending (Pending means not yet reviewed)
+  if (status !== 'Pending') {
+    updateData.approvedBy = req.user.id || req.user._id;
+  } else {
+    // Clear approvedBy when reverting to Pending
+    updateData.approvedBy = null;
+  }
+
   // Use findOneAndUpdate for better performance and atomic update
   const expense = await Expense.findOneAndUpdate(
     { _id: id },
-    {
-      status,
-      adminComment: adminComment || '',
-      approvedBy: req.user.id || req.user._id,
-    },
+    updateData,
     { new: true, runValidators: true }
   )
     .populate('userId', 'name email')
