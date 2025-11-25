@@ -43,11 +43,25 @@ export const updateAdminExpenseStatus = createAsyncThunk(
   'admin/updateStatus',
   async ({ id, status, adminComment }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/admin/expenses/${id}`, { status, adminComment });
+      // Ensure adminComment is always a string, never undefined
+      const payload = {
+        status: String(status),
+        adminComment: adminComment !== undefined && adminComment !== null ? String(adminComment) : '',
+      };
+      
+      const response = await api.put(`/admin/expenses/${id}`, payload);
       toast.success('Expense updated');
       return response.data;
     } catch (error) {
-      const message = error.response?.data?.message || 'Update failed';
+      // Log the full error for debugging
+      console.error('Update expense error:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.response?.data?.message,
+        errors: error.response?.data?.errors,
+      });
+      const message = error.response?.data?.message || error.response?.data?.errors?.join(', ') || 'Update failed';
+      toast.error(message);
       return rejectWithValue(message);
     }
   }
