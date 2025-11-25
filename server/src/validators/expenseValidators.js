@@ -11,7 +11,9 @@ export const expenseSchema = Joi.object({
 export const updateExpenseSchema = expenseSchema.fork(['category', 'amount', 'date'], (schema) => schema.optional()).min(1);
 
 export const statusSchema = Joi.object({
-  status: Joi.string().valid('Pending', 'Approved', 'Rejected', 'Paid').required(),
+  status: Joi.string().valid('Pending', 'Approved', 'Rejected', 'Paid').required().messages({
+    'any.only': '"status" must be one of [Pending, Approved, Rejected, Paid]',
+  }),
   adminComment: Joi.string().allow('', null).max(300).optional().default(''),
 });
 
