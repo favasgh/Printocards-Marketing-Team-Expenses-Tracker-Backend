@@ -12,13 +12,15 @@ export const authenticate = asyncHandler(async (req, res, next) => {
 
   try {
     const decoded = verifyToken(token);
-    const user = await User.findById(decoded.id).select('-password');
+    // Use lean() for faster queries - we don't need mongoose document methods
+    const user = await User.findById(decoded.id).select('-password').lean();
 
     if (!user) {
       return res.status(401).json({ message: 'User no longer exists.' });
     }
 
-    req.user = user;
+    // Normalize _id to id for consistency (token uses 'id', MongoDB uses '_id')
+    req.user = { ...user, id: user._id };
     return next();
   } catch (error) {
     return res.status(401).json({ message: 'Invalid or expired token.' });

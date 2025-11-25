@@ -110,25 +110,33 @@ export const updateExpenseStatus = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: 'Invalid expense id.' });
   }
 
-  const expense = await Expense.findById(id).populate('userId', 'name email');
+  // Use findOneAndUpdate for better performance and atomic update
+  const expense = await Expense.findOneAndUpdate(
+    { _id: id },
+    {
+      status,
+      adminComment: adminComment || '',
+      approvedBy: req.user.id || req.user._id,
+    },
+    { new: true, runValidators: true }
+  )
+    .populate('userId', 'name email')
+    .populate('approvedBy', 'name email')
+    .lean();
 
   if (!expense) {
     return res.status(404).json({ message: 'Expense not found.' });
   }
 
-  expense.status = status;
-  expense.adminComment = adminComment || '';
-  expense.approvedBy = req.user._id;
-  await expense.save();
-
-  // Populate approvedBy to return admin name
-  await expense.populate('approvedBy', 'name email');
-
   res.json(expense);
 });
 
 export const getSalesmen = asyncHandler(async (req, res) => {
-  const users = await User.find({ role: 'user' }).select('name email role createdAt').lean();
+  // Use lean() and limit fields for faster query
+  const users = await User.find({ role: 'user' })
+    .select('name email role createdAt')
+    .sort({ name: 1 })
+    .lean();
   res.json(users);
 });
 
@@ -195,6 +203,21 @@ const buildReportData = async (filters, interval) => {
           },
         };
 
+  // Optimize aggregations with allowDiskUse for large datasets and better index usage
+  const aggregationOptions = { allowDiskUse: true };
+  
+  // Determine best index hint based on filters
+  let indexHint = null;
+  if (filters.userId && filters.status) {
+    indexHint = { userId: 1, status: 1, date: -1 };
+  } else if (filters.status) {
+    indexHint = { status: 1, date: -1 };
+  } else if (filters.userId) {
+    indexHint = { userId: 1, date: -1 };
+  } else {
+    indexHint = { date: -1 };
+  }
+
   const [summaryAgg, byCategory, bySalesman, timeline] = await Promise.all([
     Expense.aggregate([
       matchStage,
@@ -209,7 +232,7 @@ const buildReportData = async (filters, interval) => {
           paid: { $sum: { $cond: [{ $eq: ['$status', 'Paid'] }, 1, 0] } },
         },
       },
-    ]),
+    ], aggregationOptions),
     Expense.aggregate([
       matchStage,
       {
@@ -220,7 +243,7 @@ const buildReportData = async (filters, interval) => {
         },
       },
       { $sort: { amount: -1 } },
-    ]),
+    ], aggregationOptions),
     Expense.aggregate([
       matchStage,
       {
@@ -231,7 +254,7 @@ const buildReportData = async (filters, interval) => {
         },
       },
       { $sort: { amount: -1 } },
-    ]),
+    ], aggregationOptions),
     Expense.aggregate([
       matchStage,
       {
@@ -242,7 +265,7 @@ const buildReportData = async (filters, interval) => {
         },
       },
       { $sort: { _id: 1 } },
-    ]),
+    ], aggregationOptions),
   ]);
 
   const summary = summaryAgg?.[0];
