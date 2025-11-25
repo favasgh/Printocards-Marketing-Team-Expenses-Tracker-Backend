@@ -14,26 +14,25 @@ const LoginPage = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [logoError, setLogoError] = useState(false);
 
-  // Redirect based on user role after login
+  // Redirect immediately after successful login - use requestAnimationFrame for smooth transition
   useEffect(() => {
-    if (token && user) {
-      logger.log('LoginPage redirect check - user:', user);
-      logger.log('LoginPage redirect check - user.role:', user.role);
-      const from = location.state?.from?.pathname;
-      if (from) {
-        navigate(from, { replace: true });
-      } else {
-        // Redirect based on role
-        if (user.role === 'admin') {
-          logger.log('Redirecting to /admin');
-          navigate('/admin', { replace: true });
+    if (token && user && status === 'succeeded') {
+      // Use requestAnimationFrame to ensure redirect happens in next frame
+      requestAnimationFrame(() => {
+        const from = location.state?.from?.pathname;
+        if (from) {
+          navigate(from, { replace: true });
         } else {
-          logger.log('Redirecting to /dashboard');
-          navigate('/dashboard', { replace: true });
+          // Redirect based on role
+          if (user.role === 'admin') {
+            navigate('/admin', { replace: true });
+          } else {
+            navigate('/dashboard', { replace: true });
+          }
         }
-      }
+      });
     }
-  }, [token, user, navigate, location]);
+  }, [token, user, status, navigate, location]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -45,9 +44,13 @@ const LoginPage = () => {
     dispatch(loginUser(form));
   };
 
-  if (token && user) {
-    // Redirect will be handled by useEffect
-    return null;
+  // Show loading screen during redirect to prevent flash
+  if (token && user && status === 'succeeded') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/10 via-white to-primary/30">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   return (
@@ -97,8 +100,19 @@ const LoginPage = () => {
               required
             />
           </div>
-          <button type="submit" className="btn-primary w-full" disabled={status === 'loading'}>
-            {status === 'loading' ? <LoadingSpinner /> : 'Login'}
+          <button 
+            type="submit" 
+            className="btn-primary w-full" 
+            disabled={status === 'loading'}
+          >
+            {status === 'loading' ? (
+              <span className="flex items-center justify-center gap-2">
+                <LoadingSpinner />
+                <span>Logging in...</span>
+              </span>
+            ) : (
+              'Login'
+            )}
           </button>
         </form>
 

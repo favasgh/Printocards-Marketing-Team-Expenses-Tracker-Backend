@@ -124,14 +124,17 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        // Update state immediately for fast redirect
         state.status = 'succeeded';
         state.user = action.payload.user;
         state.token = action.payload.token;
-        logger.log('Login successful, user:', action.payload.user);
-        logger.log('User role:', action.payload.user?.role);
         setAuthToken(action.payload.token);
+        // Persist auth synchronously but quickly
         persistAuth({ user: action.payload.user, token: action.payload.token });
-        toast.success(`Welcome back, ${action.payload.user.name}`);
+        // Show toast after redirect starts to not block navigation
+        requestAnimationFrame(() => {
+          toast.success(`Welcome back, ${action.payload.user.name}`);
+        });
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = 'failed';
