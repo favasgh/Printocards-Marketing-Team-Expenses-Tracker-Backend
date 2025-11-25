@@ -73,13 +73,16 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
     };
     const actionMessage = statusMessages[status] || status.toLowerCase();
     const comment = window.prompt(`Add a comment for ${actionMessage} (optional):`, '');
-    if (comment === null) return;
+    if (comment === null) return; // User cancelled
+
+    // Ensure adminComment is always a string, never undefined
+    const adminComment = comment !== null ? (comment || '') : '';
 
     expenseIds.forEach((id) => {
       onUpdateStatus({
         id,
         status,
-        adminComment: comment || '',
+        adminComment,
       });
     });
   };
