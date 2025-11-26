@@ -6,6 +6,7 @@ export const expenseSchema = Joi.object({
   date: Joi.date().iso().required(),
   location: Joi.string().allow('', null).max(120),
   note: Joi.string().allow('', null).max(300),
+  kilometers: Joi.number().min(0).optional().allow(null),
 });
 
 export const updateExpenseSchema = expenseSchema.fork(['category', 'amount', 'date'], (schema) => schema.optional()).min(1);

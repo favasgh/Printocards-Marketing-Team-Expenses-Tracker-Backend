@@ -50,6 +50,11 @@ const expenseSchema = new mongoose.Schema(
       default: '',
       maxlength: 300,
     },
+    kilometers: {
+      type: Number,
+      default: null,
+      min: 0,
+    },
   },
   { timestamps: true }
 );

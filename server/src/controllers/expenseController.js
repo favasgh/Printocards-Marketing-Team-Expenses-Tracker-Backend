@@ -30,7 +30,7 @@ const buildQueryFilters = (query) => {
 };
 
 export const createExpense = asyncHandler(async (req, res) => {
-  const { category, amount, date, location, note } = req.body;
+  const { category, amount, date, location, note, kilometers } = req.body;
 
   const payload = {
     userId: req.user._id,
@@ -40,6 +40,11 @@ export const createExpense = asyncHandler(async (req, res) => {
     location,
     note,
   };
+
+  // Store kilometers if provided (for Own Vehicle Fuel category)
+  if (kilometers !== undefined && kilometers !== null) {
+    payload.kilometers = Number(kilometers);
+  }
 
   if (req.file?.path) {
     payload.imageUrl = req.file.path;
@@ -109,6 +114,19 @@ export const updateExpense = asyncHandler(async (req, res) => {
   }
 
   const updates = { ...req.body };
+  
+  // Handle kilometers for Own Vehicle Fuel category
+  if (updates.category === 'Own Vehicle Fuel' && updates.kilometers !== undefined) {
+    updates.kilometers = Number(updates.kilometers);
+    // Recalculate amount if kilometers is provided
+    if (updates.kilometers !== null) {
+      updates.amount = updates.kilometers * 3.5;
+    }
+  } else if (updates.category !== 'Own Vehicle Fuel') {
+    // Clear kilometers if category is not Own Vehicle Fuel
+    updates.kilometers = null;
+  }
+  
   if (req.file?.path) {
     updates.imageUrl = req.file.path;
   }
