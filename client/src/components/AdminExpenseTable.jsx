@@ -102,10 +102,9 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
         {expense.category === 'Own Vehicle Fuel' && (
           <div className="text-xs text-slate-600 mt-0.5">
             {expense.kilometers !== null && expense.kilometers !== undefined ? (
-              <>
-                <span className="font-medium">{expense.kilometers} km</span>
-                <span className="text-slate-500"> × ₹3.5/km = ₹{(expense.kilometers * 3.5).toFixed(2)}</span>
-              </>
+              <span className="font-medium">
+                Kilometer = {expense.kilometers} (₹3.5 per km)
+              </span>
             ) : (
               <span className="text-slate-500 italic">
                 Amount: ₹{expense.amount.toFixed(2)} (₹3.5 per km)
