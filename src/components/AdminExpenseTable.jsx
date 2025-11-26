@@ -43,6 +43,19 @@ const AdminExpenseTable = ({ expenses, onUpdateStatus }) => {
               </td>
               <td className="px-4 py-3">
                 <div className="font-medium text-slate-800">{expense.category}</div>
+                {expense.category === 'Own Vehicle Fuel' && (
+                  <div className="text-base md:text-xs text-slate-600 mt-0.5">
+                    {expense.kilometers !== null && expense.kilometers !== undefined ? (
+                      <span className="font-medium">
+                        Kilometer = {expense.kilometers} (₹3.5 per km)
+                      </span>
+                    ) : (
+                      <span className="text-slate-500 italic">
+                        Amount: ₹{expense.amount.toFixed(2)} (₹3.5 per km)
+                      </span>
+                    )}
+                  </div>
+                )}
                 {expense.note && <div className="text-base md:text-xs text-slate-500">{expense.note}</div>}
               </td>
               <td className="px-4 py-3 font-semibold text-slate-700">₹{expense.amount.toFixed(2)}</td>
