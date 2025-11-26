@@ -60,13 +60,16 @@ const ExpenseForm = ({ onSuccess = null }) => {
     
     // Calculate amount for "Own Vehicle Fuel" category (kilometers * 3.5)
     let calculatedAmount = Number(form.amount);
+    let kilometers = null;
     if (form.category === 'Own Vehicle Fuel') {
-      calculatedAmount = Number(form.amount) * 3.5;
+      kilometers = Number(form.amount);
+      calculatedAmount = kilometers * 3.5;
     }
     
     const expensePayload = {
       ...form,
       amount: calculatedAmount,
+      kilometers: kilometers,
     };
 
     const imageBase64 = file && file.type.startsWith('image/') ? await fileToBase64(file) : null;
