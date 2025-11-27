@@ -43,10 +43,17 @@ export const createExpense = asyncHandler(async (req, res) => {
 
   // Store kilometers if provided (for Own Vehicle Fuel category)
   // Handle both string and number formats from FormData
-  if (kilometers !== undefined && kilometers !== null && kilometers !== '') {
-    const kmValue = typeof kilometers === 'string' ? parseFloat(kilometers) : Number(kilometers);
-    if (!isNaN(kmValue) && kmValue > 0) {
-      payload.kilometers = kmValue;
+  // FormData sends everything as strings, so we need to parse it
+  if (category === 'Own Vehicle Fuel') {
+    if (kilometers !== undefined && kilometers !== null && kilometers !== '') {
+      const kmValue = typeof kilometers === 'string' ? parseFloat(kilometers) : Number(kilometers);
+      if (!isNaN(kmValue) && kmValue >= 0) {
+        payload.kilometers = kmValue;
+      }
+    }
+    // If kilometers not provided but category is Own Vehicle Fuel, calculate from amount
+    if (!payload.kilometers && amount) {
+      payload.kilometers = Math.round((amount / 3.5) * 100) / 100; // Round to 2 decimal places
     }
   }
 
@@ -56,7 +63,9 @@ export const createExpense = asyncHandler(async (req, res) => {
 
   const expense = await Expense.create(payload);
 
-  return res.status(201).json(expense);
+  // Ensure kilometers is included in response
+  const responseExpense = expense.toObject ? expense.toObject() : expense;
+  return res.status(201).json(responseExpense);
 });
 
 export const getMyExpenses = asyncHandler(async (req, res) => {

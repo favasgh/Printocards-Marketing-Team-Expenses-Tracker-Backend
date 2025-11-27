@@ -54,9 +54,9 @@ export const createExpense = createAsyncThunk(
       formData.append('date', expense.date);
       formData.append('location', expense.location || '');
       formData.append('note', expense.note || '');
-      // Add kilometers if provided (for Own Vehicle Fuel category)
-      if (expense.kilometers !== null && expense.kilometers !== undefined) {
-        formData.append('kilometers', expense.kilometers);
+      // Always add kilometers for Own Vehicle Fuel category (even if 0, so server knows to calculate)
+      if (expense.category === 'Own Vehicle Fuel' && expense.kilometers !== null && expense.kilometers !== undefined) {
+        formData.append('kilometers', String(expense.kilometers));
       }
 
       if (imageFile) {
