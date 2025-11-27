@@ -42,8 +42,12 @@ export const createExpense = asyncHandler(async (req, res) => {
   };
 
   // Store kilometers if provided (for Own Vehicle Fuel category)
-  if (kilometers !== undefined && kilometers !== null) {
-    payload.kilometers = Number(kilometers);
+  // Handle both string and number formats from FormData
+  if (kilometers !== undefined && kilometers !== null && kilometers !== '') {
+    const kmValue = typeof kilometers === 'string' ? parseFloat(kilometers) : Number(kilometers);
+    if (!isNaN(kmValue) && kmValue > 0) {
+      payload.kilometers = kmValue;
+    }
   }
 
   if (req.file?.path) {
